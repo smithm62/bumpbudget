@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<section class="feature-image" style="text-align: center;">
+  <img
+    src="{% static 'images/goals.png' %}"
+    alt="Planning finances for your baby"
+    width="900"
+  >
+</section>
+
+<br>
+<br>
+<section class="card goals-box">
+
+  <label class="goal-item">
+    <input type="checkbox">
+    <span>
+      <strong>Build an emergency fund</strong><br>
+      Set aside savings to cover unexpected medical or household expenses.
+    </span>
+  </label>
+<br>
+<br>
+  <label class="goal-item">
+    <input type="checkbox">
+    <span>
+      <strong>Plan for maternity or parental leave</strong><br>
+      Prepare for reduced income during time off work.
+    </span>
+  </label>
+<br>
+<br>
+  <label class="goal-item">
+    <input type="checkbox">
+    <span>
+      <strong>Save for baby essentials</strong><br>
+      Budget for one-off costs such as furniture, clothing, and equipment.
+    </span>
+  </label>
+<br>
+<br>
+  <label class="goal-item">
+    <input type="checkbox">
+    <span>
+      <strong>Prepare for childcare costs</strong><br>
+      Estimate future childcare expenses and available supports.
+    </span>
+  </label>
+<br>
+<br>
+  <label class="goal-item">
+    <input type="checkbox">
+    <span>
+      <strong>Create a long-term savings plan</strong><br>
+      Consider ongoing savings for future family needs.
+    </span>
+  </label>
+
+</section>
+
+{% endblock %}

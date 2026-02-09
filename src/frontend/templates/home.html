@@ -1,5 +1,15 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
+
+<section class="feature-image" style="text-align: center;">
+  <img
+    src="{% static 'images/top.png' %}"
+    alt="Planning finances for your baby"
+    width="900"
+  >
+</section>
+
 <section class="hero">
   <h2>Plan for baby with confidence.</h2>
   <p>
@@ -15,6 +25,14 @@
       <a class="btn secondary" href="/login/">Log in</a>
     {% endif %}
   </div>
+</section>
+
+<section class="feature-image" style="text-align: center;">
+  <img
+    src="{% static 'images/baby.png' %}"
+    alt="Planning finances for your baby"
+    width="700"
+  >
 </section>
 
 <section class="grid-3">

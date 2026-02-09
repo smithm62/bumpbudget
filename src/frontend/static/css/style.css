@@ -1,87 +1,298 @@
-.dashboard {
-  max-width: 900px;
+/* Variables */
+:root {
+  --bg-light: #fffdfa;
+  --card-bg: #ffffff;
+  --primary: #5c7069;
+  --primary-soft: #e6ece9;
+  --text-main: #35413d;
+  --text-muted: #505c58;
+  --radius: 14px;
+}
+
+/* Reset */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg-light);
+  color: var(--text-main);
+}
+
+/* ================= HEADER ================= */
+
+.site-header {
+  background: var(--bg-light);
+  padding: 1.75rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+}
+
+.brand img {
+  height: 90px;
+}
+
+.site-nav a {
+  margin-left: 1.25rem;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.site-nav a:hover {
+  color: var(--primary);
+}
+
+/* ================= PUBLIC PAGES ================= */
+
+.container {
+  max-width: 1100px;
   margin: 0 auto;
+  padding: 3rem 1.5rem;
 }
 
-.intro {
-  color: #555;
-  margin-bottom: 24px;
+/* Hero */
+
+.hero {
+  background: linear-gradient(
+    135deg,
+    #fffdfa,
+    rgba(92,112,105,0.12)
+  );
+  padding: 4rem 3rem;
+  border-radius: var(--radius);
+  text-align: center;
+  margin-bottom: 4rem;
 }
 
-.summary-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-  margin-bottom: 32px;
+.hero h2 {
+  font-size: 2.4rem;
+  color: var(--primary);
+  margin-bottom: 1rem;
 }
 
-.card {
-  border: 1px solid #e6e6e6;
-  padding: 16px;
-  border-radius: 8px;
-  background: #fafafa;
+.hero p {
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  color: var(--text-muted);
+  font-size: 1.05rem;
 }
 
-.amount {
-  font-size: 1.6rem;
-  margin: 8px 0 0;
+/* Buttons */
+
+.cta {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
 }
-
-.amount.positive {
-  color: #2f8f2f;
-}
-
-.chart-container {
-  max-width: 400px;   /* controls width */
-  margin: 0 auto;     /* center it */
-}
-
-.chart-container canvas {
-  width: 100% !important;
-  height: auto !important;
-}
-
-
-.upcoming ul {
-  padding-left: 18px;
-}
-
-
-.site-nav a { margin-right: 12px; }
-
-.hero { padding: 18px 0 26px; }
-.cta { margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap; }
 
 .btn {
-  display: inline-block;
-  padding: 10px 14px;
-  border-radius: 8px;
-  background: #2d6cdf;
+  background: var(--primary);
   color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
   text-decoration: none;
-  border: none;
-  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
-.btn.secondary { background: #555; }
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(92,112,105,0.35);
+}
+
+.btn.secondary {
+  background: white;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+}
+
+/* Feature grid */
 
 .grid-3 {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 14px;
-  margin-top: 20px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
 }
 
-.form input, .form textarea {
+.card {
+  background: var(--card-bg);
+  padding: 2rem;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.card h3 {
+  color: var(--primary);
+}
+
+/* ================= APP LAYOUT ================= */
+/* Only applies when .app-layout exists */
+
+.app-layout {
+  display: flex;
+  min-height: calc(100vh - 140px);
+}
+
+/* Sidebar */
+
+.sidebar {
+  width: 240px;
+  background: var(--bg-light);
+  border-right: 1px solid #e0e0dc;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sidebar-nav a {
+  display: block;
+  padding: 1.5rem 1rem;
+  margin-bottom: 0.4rem;
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.sidebar-nav a:hover {
+  background: var(--primary-soft);
+}
+
+
+/* Main app content */
+
+.page-content {
+  flex: 1;
+  padding: 2.5rem;
+  overflow-y: auto;
+}
+
+/* ================= FORMS ================= */
+
+.form {
+  max-width: 600px;
+  margin: 2rem auto;
+  background: white;
+  padding: 2.5rem;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(92,112,105,0.12);
+}
+
+.form label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.form input,
+.form select,
+.form textarea {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 12px;
+  padding: 0.65rem 0.75rem;
+  margin-bottom: 1.4rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-family: inherit;
 }
 
-.note { color: #666; font-size: 0.9rem; margin-top: 12px; }
-.error-box{
-  background:#ffe6e6;
-  border:1px solid #cc0000;
-  padding:12px;
-  border-radius:8px;
-  margin:12px 0;
+.form input:focus,
+.form textarea:focus,
+.form select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(92,112,105,0.2);
+}
+
+.form button {
+  width: 100%;
+  background: var(--primary);
+  color: white;
+  padding: 0.8rem;
+  border-radius: 10px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Helper text */
+
+.note {
+  max-width: 600px;
+  margin: 1rem auto 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* Errors */
+
+.error-box {
+  max-width: 600px;
+  margin: 1.5rem auto;
+  padding: 1.25rem;
+  background: #fdecea;
+  border-left: 5px solid #e5533d;
+  border-radius: 8px;
+  color: #7a1f14;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 900px) {
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .app-layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e0e0dc;
+  }
+}
+
+/* ============================= */
+/* Goals – Sage green checklist  */
+/* ============================= */
+
+.goals-box {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.goal-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+.goal-item input[type="checkbox"] {
+  accent-color: var(--primary);
+  width: 18px;
+  height: 18px;
+  margin-top: 4px;
+}
+
+.goal-item span {
+  color: var(--text-main);
+  line-height: 1.5;
 }
