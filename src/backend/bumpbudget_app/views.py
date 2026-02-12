@@ -45,17 +45,38 @@ def tracker(request):
 def timeline(request):
     return render(request, "timeline.html")
 
+from decimal import Decimal
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect, render
+from .models import UserProfile
+
+
 @login_required
 def dashboard(request):
     profile = UserProfile.objects.filter(user=request.user).first()
 
-    # If no profile or missing key details, force setup
-    if not profile or not profile.due_date or profile.monthly_income is None:
+    if not profile:
         return redirect("profile_setup")
+
+    # Always require monthly income (core to dashboard math)
+    if profile.monthly_income is None:
+        return redirect("profile_setup")
+
+    # Stage-specific requirements
+    if profile.life_stage == UserProfile.LifeStage.EXPECTING:
+        if not profile.due_date:
+            return redirect("profile_setup")
+
+    elif profile.life_stage == UserProfile.LifeStage.EARLY:
+        if profile.child_age_months is None:
+            return redirect("profile_setup")
+
+    # PLANNING: no extra required fields (by design)
 
     partner_income = profile.partner_monthly_income or Decimal("0.00")
     monthly_income = profile.monthly_income + partner_income
-    # Temporary placeholder until you build Expense models
+
+    # Temporary placeholder until Expense models exist
     total_expenses = Decimal("1950.00")
     remaining = monthly_income - total_expenses
 
@@ -66,6 +87,7 @@ def dashboard(request):
         "remaining": remaining,
     }
     return render(request, "dashboard.html", context)
+
 
     
 @login_required

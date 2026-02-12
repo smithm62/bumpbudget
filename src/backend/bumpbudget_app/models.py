@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from decimal import Decimal
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class UserProfile(models.Model):
@@ -27,7 +28,12 @@ class UserProfile(models.Model):
     due_date = models.DateField(null=True, blank=True)
 
     # Early-parenthood-specific
-    child_age_months = models.PositiveSmallIntegerField(null=True, blank=True)
+    child_age_months = models.IntegerField(
+    null=True,
+    blank=True,
+    validators=[MinValueValidator(0), MaxValueValidator(24)],
+)
+
 
     # Income / leave
     monthly_income = models.DecimalField(
@@ -53,6 +59,11 @@ class UserProfile(models.Model):
     currency = models.CharField(max_length=3, choices=Currency.choices, default=Currency.EUR)
 
     created_at = models.DateTimeField(auto_now_add=True)
+
+    
+
+
+
 
     def __str__(self):
         return f"{self.user.username} profile"

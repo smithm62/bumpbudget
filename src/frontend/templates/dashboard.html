@@ -1,21 +1,30 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
 <section class="dashboard">
 
-  <!-- Welcome header -->
-  <h2>Welcome, {{ user.username }} </h2>
+ <div class="welcome-block">
+  <h2 class="welcome-title">Welcome, {{ user.username }}</h2>
   <p class="intro">
     This is your personal financial dashboard for pregnancy and early parenthood.
   </p>
 
-  <!-- Quick profile summary -->
   <div class="profile-summary">
-    <p><strong>Due date:</strong> {{ profile.due_date }}</p>
-    <p><strong>First child:</strong>
-      {% if profile.first_child %}Yes{% else %}No{% endif %}
-    </p>
+    <div class="summary-item">
+      <span class="label">Due date</span>
+      <span class="value">{{ profile.due_date }}</span>
+    </div>
+
+    <div class="summary-item">
+      <span class="label">First child</span>
+      <span class="value">
+        {% if profile.first_child %}Yes{% else %}No{% endif %}
+      </span>
+    </div>
   </div>
+</div>
+
 
   <!-- Summary cards -->
   <div class="summary-grid">
@@ -59,16 +68,29 @@
 
   <!-- Upcoming costs -->
   <section class="upcoming">
-    <h3>Upcoming Costs</h3>
-    <p class="small">
-      Example upcoming costs (these will come from milestones + your saved expenses later).
-    </p>
-    <ul>
-      <li>GP appointment – €60</li>
-      <li>Baby essentials – €120</li>
-      <li>Childcare deposit – €300</li>
-    </ul>
-  </section>
+  <h3 class="section-title">Upcoming Costs</h3>
+  <p class="small">
+    Example upcoming costs (these will come from milestones + your saved expenses later).
+  </p>
 
+  <ul class="upcoming-list">
+    <li>
+      <span class="cost-label">GP appointment</span>
+      <span class="cost-amount">€60</span>
+    </li>
+    <li>
+      <span class="cost-label">Baby essentials</span>
+      <span class="cost-amount">€120</span>
+    </li>
+    <li>
+      <span class="cost-label">Childcare deposit</span>
+      <span class="cost-amount">€300</span>
+    </li>
+  </ul>
 </section>
+
 {% endblock %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'js/dashboard.js' %}"></script>
+
