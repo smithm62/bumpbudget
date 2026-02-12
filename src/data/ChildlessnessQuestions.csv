@@ -1,0 +1,31 @@
+Question Code,Full Question ,Construct Name
+Q1,Women choose not to have a child because they are not financially stable.,Financial
+Q2,Women choose not to have a child because it is expensive to raise children.,Financial
+Q3,Women who choose not to have a child due to financial reasons are judged.,Financial
+Q4,Women in high income jobs choose not to have a child because they face a high opportunity cost in losing potential earnings.,Financial
+Q5,"Childless women, who are infertile, choose not to have a child because of the high cost of fertility treatments or adoption.",Financial
+Q6,Single women choose not to have a child because they cannot bear the financial responsibility on their own.,Financial
+Q7,How have financial considerations influenced your decision about having children?,Financial
+Q8,It is perfectly reasonable for a woman to choose not to have a child.,Choice
+Q9,"If a woman chooses not to have a child, society automatically has a negative perception her.",Choice
+Q10,"If a woman chooses not to have a child, she is making a poor decision.",Choice
+Q11,A woman who decides not to have a child is viewed the same as a man who chooses not to have a child.,Choice
+Q12,A woman who chooses to not have a child is selfish.,Choice
+Q13,"A woman who does not have a child, chooses not to because of negative stories about childbirth.",Outside Influences
+Q14,A woman who does not have a child chooses to do so because of negative messages about single parent households (more specifically father not present in home).,Outside Influences
+Q15,"Women who do not have children make this decision because of outside influences such as family, religion, etc.",Outside Influences
+Q16,"A woman who does not have a child, does so based on pressure from peers.",Outside Influences
+Q17,A woman who does not have children makes this decision based on her fears that she and the other parent will have poor parenting skills.,Outside Influences
+Q18,Society places too much pressure on women to have children.,Outside Influences
+Q19,Society perceives women in same sex relationships as unable to have children.,Outside Influences
+Q20,"According to traditional views, a woman is not fulfilling her role as a woman if she chooses not to have a child.",Outside Influences
+Q21,A middle aged woman [35+ years old] who does not have a child is probably infertile.,Health
+Q22,A middle aged woman [35+ years old] who does not have a child has waited too long and will likely face health complications if she decides to have a child now.,Health
+Q23,Women who do not have children live longer than women who have children.,Health
+Q24,A woman should wait until she is physically fit before having a child.,Health
+Q25,"Women should not have children because it can cause health problems they did not have before, such as high blood pressure, depression, or anxiety.",Health
+Q26,A woman should not have a child because the health risks outweigh the benefits.,Health
+Q27,A young woman [<35 years old] should not have health concerns when considering having a child.,Health
+Q28,Concerns about health should not be a reason why a woman chooses not to have a child.,Health
+Q29,"Many experts say the best time to get pregnant is by 30 years of age. If a woman has not had a child by then, she should not have a child because of the risks.",Health
+Q30,"Biologically speaking, if a woman has not had a child by her mid-thirties, it is too late.",Health
