@@ -4,6 +4,8 @@ from .models import *
 from django.contrib.auth import login
 from .forms import *
 from decimal import Decimal
+from datetime import date
+from .models import UserProfile
 
 
 def register(request):
@@ -105,3 +107,119 @@ def profile_setup(request):
         form = ProfileSetupForm(instance=profile)
 
     return render(request, "profile_setup.html", {"form": form})
+
+@login_required
+def timeline(request):
+
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+
+    today = date.today()
+
+    if profile.due_date:
+        days_until_due = (profile.due_date - today).days
+        current_week = 40 - (days_until_due // 7)
+        progress_percent = (current_week / 40) * 100
+        current_month = min(max(current_week // 4, 1), 9)
+
+        remaining_weeks = 40 - current_week
+
+    else:
+        current_week = 0
+        progress_percent = 0
+        current_month = 1
+
+
+    timeline_data = [
+        {
+            "month": 1,
+            "icon": "images/month_icons/discovery.png",
+            "icon_type": "horizontal",
+            "tasks": ["Take pregnancy test", "Book GP appointment"]
+        },
+        {
+            "month": 2,
+            "icon": "images/month_icons/doctor.png",
+            "icon_type": "horizontal",
+            "tasks": ["First prenatal visit", "Start prenatal vitamins"]
+        },
+        {
+            "month": 3,
+            "icon": "images/month_icons/ultrasound.png",
+            "icon_type": "horizontal",
+            "tasks": ["First ultrasound", "Tell close family"]
+        },
+        {
+            "month": 4,
+            "icon": "images/month_icons/notebook.png",
+            "icon_type": "vertical",
+            "tasks": ["Anatomy scan", "Start thinking about baby names"]
+        },
+        {
+            "month": 5,
+            "icon": "images/month_icons/balloons.png",
+            "icon_type": "vertical",
+            "tasks": ["Gender reveal", "Start baby registry"]
+        },
+        {
+            "month": 6,
+            "icon": "images/month_icons/nursery.png",
+            "icon_type": "horizontal",
+            "tasks": ["Buy baby clothes", "Plan nursery", "Research childcare"]
+        },
+        {
+            "month": 7,
+            "icon": "images/month_icons/hospitalbag.png",
+            "icon_type": "vertical",
+            "tasks": ["Pack hospital bag", "Prenatal classes"]
+        },
+        {
+            "month": 8,
+            "icon": "images/month_icons/carseat.png",
+            "icon_type": "vertical",
+            "tasks": ["Install car seat", "Finalize hospital plan"]
+        },
+        {
+            "month": 9,
+            "icon": "images/month_icons/babyborn.png",
+            "icon_type": "vertical",
+            "tasks": ["Prepare hospital documents", "Rest and prepare"]
+        },
+    ]
+
+    remaining_months = [
+        m for m in timeline_data if m["month"] >= current_month
+    ]
+
+
+    baby_sizes = {
+        8: "raspberry",
+        12: "lime",
+        16: "avocado",
+        20: "banana",
+        24: "corn",
+        28: "eggplant",
+        32: "coconut",
+        36: "papaya",
+        40: "watermelon"
+    }
+
+    baby_size = None
+
+    for week in sorted(baby_sizes):
+        if current_week >= week:
+            baby_size = baby_sizes[week]
+
+    baby_image = f"images/baby_sizes/{baby_size}.png"
+
+    context = {
+        "profile": profile,
+        "current_week": current_week,
+        "remaining_weeks": remaining_weeks,
+        "progress_percent": progress_percent,
+        "current_month": current_month,
+        "timeline": remaining_months,
+        "baby_size": baby_size,
+        "baby_image": baby_image,
+    }
+    
+    return render(request, "timeline.html", context)
