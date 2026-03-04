@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="page-content">
+
+<div class="journey-grid">
+
+<!-- Pregnancy Progress -->
+
+<div class="card pregnancy-progress">
+
+<h3>Pregnancy Progress</h3>
+
+<div class="pregnancy-header">
+<span class="week-label">Week {{ current_week }}</span>
+<span class="weeks-left">{{ remaining_weeks }} weeks left</span>
+</div>
+
+<div class="pregnancy-bar">
+<div class="pregnancy-progress-fill" style="width: {{ progress_percent }}%"></div>
+</div>
+
+<div class="pregnancy-info">
+
+<div class="pregnancy-text">
+
+<p class="progress-caption">
+You're in the 
+<strong>
+{% if current_week < 13 %}
+first
+{% elif current_week < 27 %}
+second
+{% else %}
+third
+{% endif %}
+</strong>
+trimester
+</p>
+
+<p class="progress-caption">
+Your baby is about the size of a <strong>{{ baby_size }}</strong>
+</p>
+
+</div>
+
+<div class="baby-visual">
+<img src="{% static baby_image %}" alt="Baby size">
+</div>
+
+</div>
+
+</div>
+
+
+<!-- Current Focus -->
+
+<div class="card focus-card">
+
+<h3>This Month's Focus</h3>
+
+<ul class="focus-list">
+
+{% for item in timeline|slice:":1" %}
+{% for task in item.tasks %}
+<li>{{ task }}</li>
+{% endfor %}
+{% endfor %}
+
+</ul>
+
+</div>
+
+</div>
+
+
+<h3 class="section-title">Upcoming Milestones</h3>
+
+<div class="timeline">
+
+{% for item in timeline %}
+
+<div class="timeline-item {% if item.month == current_month %}current{% endif %}">
+
+<div class="timeline-dot"></div>
+
+<div class="timeline-content">
+
+<div class="timeline-row">
+
+<div class="timeline-text">
+
+<h3>
+Month {{ item.month }}
+{% if item.month == current_month %}
+— You are here
+{% endif %}
+</h3>
+
+<ul>
+{% for task in item.tasks %}
+<li>{{ task }}</li>
+{% endfor %}
+</ul>
+
+</div>
+
+<div class="timeline-icon">
+<img class="icon-{{ item.icon_type }}" src="{% static item.icon %}" alt="Month icon">
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+{% endblock %}

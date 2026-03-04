@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="timeline-container">
+
+<h1>Your Bump Journey</h1>
+
+<p>Week {{ current_week }} of 40</p>
+
+<div class="progress-bar">
+    <div class="progress" style="width: {{ progress_percent }}%"></div>
+</div>
+
+
+<div class="timeline">
+
+<div class="timeline-item">
+    <div class="timeline-dot"></div>
+    <div class="timeline-content">
+        <h3>Month 4</h3>
+        <ul>
+            <li>First big scan</li>
+            <li>Start thinking about baby names</li>
+        </ul>
+    </div>
+</div>
+
+
+<div class="timeline-item">
+    <div class="timeline-dot"></div>
+    <div class="timeline-content">
+        <h3>Month 5</h3>
+        <ul>
+            <li>Gender reveal</li>
+            <li>Start baby registry</li>
+        </ul>
+    </div>
+</div>
+
+
+<div class="timeline-item current">
+    <div class="timeline-dot"></div>
+    <div class="timeline-content">
+        <h3>Month 6 ⭐</h3>
+        <ul>
+            <li>Buy baby clothes</li>
+            <li>Plan nursery</li>
+            <li>Research childcare</li>
+        </ul>
+    </div>
+</div>
+
+
+<div class="timeline-item">
+    <div class="timeline-dot"></div>
+    <div class="timeline-content">
+        <h3>Month 7</h3>
+        <ul>
+            <li>Pack hospital bag</li>
+            <li>Prenatal classes</li>
+        </ul>
+    </div>
+</div>
+
+
+<div class="timeline-item">
+    <div class="timeline-dot"></div>
+    <div class="timeline-content">
+        <h3>Month 8</h3>
+        <ul>
+            <li>Install car seat</li>
+            <li>Finalise hospital plan</li>
+        </ul>
+    </div>
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

@@ -1,4 +1,5 @@
-/* Variables */
+/* ================= VARIABLES ================= */
+
 :root {
   --bg-light: #fffdfa;
   --card-bg: #ffffff;
@@ -9,7 +10,8 @@
   --radius: 14px;
 }
 
-/* Reset */
+/* ================= RESET ================= */
+
 * {
   box-sizing: border-box;
 }
@@ -61,7 +63,7 @@ body {
   padding: 3rem 1.5rem;
 }
 
-/* Hero */
+/* ================= HERO ================= */
 
 .hero {
   background: linear-gradient(
@@ -85,10 +87,9 @@ body {
   max-width: 600px;
   margin: 0 auto 2rem;
   color: var(--text-muted);
-  font-size: 1.05rem;
 }
 
-/* Buttons */
+/* ================= BUTTONS ================= */
 
 .cta {
   display: flex;
@@ -103,12 +104,6 @@ body {
   border-radius: 10px;
   text-decoration: none;
   font-weight: 600;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(92,112,105,0.35);
 }
 
 .btn.secondary {
@@ -117,7 +112,7 @@ body {
   border: 2px solid var(--primary);
 }
 
-/* Feature grid */
+/* ================= GRID ================= */
 
 .grid-3 {
   display: grid;
@@ -125,11 +120,14 @@ body {
   gap: 2rem;
 }
 
+/* ================= CARDS ================= */
+
 .card {
   background: var(--card-bg);
   padding: 2rem;
   border-radius: var(--radius);
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin-bottom: 1.5rem;
 }
 
 .card h3 {
@@ -137,23 +135,17 @@ body {
 }
 
 /* ================= APP LAYOUT ================= */
-/* Only applies when .app-layout exists */
 
 .app-layout {
   display: flex;
   min-height: calc(100vh - 140px);
 }
 
-/* Sidebar */
-
 .sidebar {
   width: 240px;
   background: var(--bg-light);
   border-right: 1px solid #e0e0dc;
   padding: 1.5rem 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
 }
 
 .sidebar-nav a {
@@ -170,138 +162,14 @@ body {
   background: var(--primary-soft);
 }
 
-
-/* Main app content */
+/* ================= PAGE CONTENT ================= */
 
 .page-content {
   flex: 1;
   padding: 2.5rem;
-  overflow-y: auto;
 }
 
-/* ================= FORMS ================= */
-
-.form {
-  max-width: 600px;
-  margin: 2rem auto;
-  background: white;
-  padding: 2.5rem;
-  border-radius: var(--radius);
-  box-shadow: 0 4px 12px rgba(92,112,105,0.12);
-}
-
-.form label {
-  display: block;
-  margin-bottom: 0.4rem;
-  font-weight: 600;
-  color: var(--primary);
-}
-
-.form input,
-.form select,
-.form textarea {
-  width: 100%;
-  padding: 0.65rem 0.75rem;
-  margin-bottom: 1.4rem;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  font-family: inherit;
-}
-
-.form input:focus,
-.form textarea:focus,
-.form select:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(92,112,105,0.2);
-}
-
-.form button {
-  width: 100%;
-  background: var(--primary);
-  color: white;
-  padding: 0.8rem;
-  border-radius: 10px;
-  border: none;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-/* Helper text */
-
-.note {
-  max-width: 600px;
-  margin: 1rem auto 0;
-  text-align: center;
-  font-size: 0.9rem;
-  color: var(--text-muted);
-}
-
-/* Errors */
-
-.error-box {
-  max-width: 600px;
-  margin: 1.5rem auto;
-  padding: 1.25rem;
-  background: #fdecea;
-  border-left: 5px solid #e5533d;
-  border-radius: 8px;
-  color: #7a1f14;
-}
-
-/* ================= RESPONSIVE ================= */
-
-@media (max-width: 900px) {
-  .grid-3 {
-    grid-template-columns: 1fr;
-  }
-
-  .app-layout {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid #e0e0dc;
-  }
-}
-
-/* ============================= */
-/* Goals – Sage green checklist  */
-/* ============================= */
-
-.goals-box {
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-}
-
-.goal-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  cursor: pointer;
-}
-
-.goal-item input[type="checkbox"] {
-  accent-color: var(--primary);
-  width: 18px;
-  height: 18px;
-  margin-top: 4px;
-}
-
-.goal-item span {
-  color: var(--text-main);
-  line-height: 1.5;
-}
-.chart-container {
-  width: 300px;
-  height: 300px;
-  margin: 0 auto;
-}
-
+/* ================= DASHBOARD ================= */
 
 .summary-grid {
   display: grid;
@@ -309,112 +177,211 @@ body {
   gap: 1.5rem;
   margin: 2rem 0;
 }
-.summary-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  margin: 2rem 0;
-}
-@media (max-width: 768px) {
+
+@media (max-width:768px) {
   .summary-grid {
     grid-template-columns: 1fr;
   }
 }
 
-.welcome-block {
-  margin-bottom: 2.5rem;
+/* ================= JOURNEY GRID ================= */
+
+.journey-grid{
+display:grid;
+grid-template-columns: 1.4fr 1fr;
+gap:24px;
+margin-bottom:30px;
 }
 
-.welcome-title {
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: #2f3e3a;
-  margin-bottom: 0.4rem;
+@media (max-width:900px){
+.journey-grid{
+grid-template-columns:1fr;
+}
 }
 
-.intro {
-  font-size: 0.95rem;
-  color: #6b7d76;
-  max-width: 520px;
-  margin-bottom: 1.5rem;
+/* ================= PREGNANCY PROGRESS ================= */
+
+.pregnancy-header{
+display:flex;
+justify-content:space-between;
+font-weight:600;
+margin-bottom:10px;
 }
 
-.profile-summary {
-  display: flex;
-  gap: 2rem;
-  background: #f4f7f6;
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
-  width: fit-content;
+.week-label{
+color:var(--primary);
 }
 
-.summary-item {
-  display: flex;
-  flex-direction: column;
+.weeks-left{
+color:var(--text-muted);
+font-size:0.9rem;
 }
 
-.summary-item .label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: #8a9c96;
-  margin-bottom: 0.2rem;
+.pregnancy-bar{
+height:16px;
+background:var(--primary-soft);
+border-radius:20px;
+overflow:hidden;
+margin-bottom:20px;
 }
 
-.summary-item .value {
-  font-size: 1rem;
-  font-weight: 500;
-  color: #2f3e3a;
+.pregnancy-progress-fill{
+height:100%;
+background:linear-gradient(90deg,#b9ccc6,#5c7069);
 }
 
-.upcoming {
-  background: #ffffff;
-  padding: 1.5rem;
-  border-radius: 16px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
-  margin-top: 2.5rem;
-  max-width: 520px;
+.pregnancy-info{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:30px;
 }
 
-.section-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #2f3e3a;
-  margin-bottom: 0.3rem;
+.pregnancy-text{
+flex:1;
 }
 
-.upcoming .small {
-  font-size: 0.85rem;
-  color: #7a8d86;
-  margin-bottom: 1.25rem;
+.progress-caption{
+font-size:0.95rem;
+margin-bottom:8px;
+color:var(--text-muted);
 }
 
-.upcoming-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.baby-visual{
+flex:0 0 120px;
+text-align:center;
 }
 
-.upcoming-list li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid #edf1ef;
+.baby-visual img{
+width:110px;
+height:auto;
+object-fit:contain;
 }
 
-.upcoming-list li:last-child {
-  border-bottom: none;
+/* ================= FOCUS LIST ================= */
+
+.focus-list{
+padding-left:20px;
 }
 
-.cost-label {
-  font-size: 0.95rem;
-  color: #2f3e3a;
+.focus-list li{
+margin-bottom:8px;
 }
 
-.cost-amount {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #5c7069;
+/* ================= TIMELINE ================= */
+
+.timeline{
+position:relative;
+margin-top:40px;
+padding-left:40px;
 }
 
+.timeline::before{
+content:"";
+position:absolute;
+left:8px;
+top:0;
+width:3px;
+height:100%;
+background:var(--primary-soft);
+}
+
+.timeline-item{
+position:relative;
+margin-bottom:30px;
+}
+
+.timeline-dot{
+position:absolute;
+left:-32px;
+top:6px;
+width:14px;
+height:14px;
+background:var(--primary);
+border-radius:50%;
+}
+
+/* Timeline cards */
+
+.timeline-content{
+background:#ffffff;
+padding:22px 24px;
+border-radius:16px;
+box-shadow:0 6px 14px rgba(0,0,0,0.06);
+max-width:650px;
+margin-bottom:40px;
+}
+
+.timeline-content h3{
+margin-top:0;
+color:var(--primary);
+}
+
+.timeline-content ul{
+margin-top:10px;
+padding-left:20px;
+}
+
+.timeline-content li{
+margin-bottom:6px;
+color:var(--text-muted);
+}
+
+/* ================= CURRENT MONTH ================= */
+
+.timeline-item.current .timeline-dot{
+background:var(--primary);
+transform:scale(1.3);
+}
+
+.timeline-item.current .timeline-content{
+background:#ffffff;
+border:2px solid var(--primary);
+}
+
+/* ================= TIMELINE ROW ================= */
+
+.timeline-row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:20px;
+}
+
+.timeline-text{
+flex:1;
+}
+
+.timeline-icon{
+width:80px;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.timeline-icon img{
+opacity:0.9;
+margin-top:4px;
+transform:translateX(-60px);
+
+}
+
+/* Horizontal icons */
+
+.timeline-icon img.icon-horizontal{
+width:160px;
+height:auto;
+}
+
+/* Vertical icons */
+
+.timeline-icon img.icon-vertical{
+height:110px;
+width:auto;
+}
+
+.timeline-content:hover{
+transform:translateY(-2px);
+box-shadow:0 10px 20px rgba(0,0,0,0.08);
+transition:all 0.2s ease;
+}
