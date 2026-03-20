@@ -1,17 +1,55 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
-<h2>Create an account</h2>
 
-{% if form.errors %}
-  <div class="error-box">
-    <p><strong>Please fix the errors below:</strong></p>
-    {{ form.errors }}
+<div class="auth-page">
+
+  <div class="auth-card">
+
+    <div class="auth-card-header">
+      <img src="{% static 'images/LOGO.png' %}" alt="BumpBudget" class="auth-logo">
+      <h1>Create your account</h1>
+      <p>Start planning your financial journey today.</p>
+    </div>
+
+    {% if form.errors %}
+    <div class="auth-error-box">
+      <span class="auth-error-icon">!</span>
+      <div>
+        <p class="auth-error-title">Please fix the following:</p>
+        {% for field, errors in form.errors.items %}
+          {% for error in errors %}
+            <p class="auth-error-item">{{ error }}</p>
+          {% endfor %}
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <form method="post" class="auth-form">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="auth-field">
+        <label for="{{ field.id_for_label }}" class="auth-label">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}
+          <p class="auth-help">{{ field.help_text }}</p>
+        {% endif %}
+        {% if field.errors %}
+          {% for error in field.errors %}
+            <p class="auth-field-error">{{ error }}</p>
+          {% endfor %}
+        {% endif %}
+      </div>
+      {% endfor %}
+
+      <button type="submit" class="btn auth-btn">Create Account</button>
+    </form>
+
+    <p class="auth-switch">Already have an account? <a href="/login/">Log in</a></p>
+
   </div>
-{% endif %}
 
-<form method="post" class="form">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button class="btn" type="submit">Sign up</button>
-</form>
+</div>
+
 {% endblock %}

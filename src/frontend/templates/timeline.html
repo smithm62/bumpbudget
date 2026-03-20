@@ -5,121 +5,148 @@
 
 <div class="page-content">
 
-<div class="journey-grid">
+  <!-- Page Heading -->
+  <div class="page-heading">
+    <h1>Your Pregnancy Journey</h1>
+    {% if remaining_weeks %}
+      <span class="weeks-remaining-tag">{{ remaining_weeks }} weeks to go</span>
+    {% endif %}
+  </div>
 
-<!-- Pregnancy Progress -->
+  <!-- Top 3 Cards -->
+  <div class="journey-grid">
 
-<div class="card pregnancy-progress">
+    <!-- Pregnancy Progress Card -->
+    <div class="card pregnancy-progress">
+      <div class="progress-header">
+        <div class="progress-left">
+          <h3>Week {{ current_week }}</h3>
+          <p>of 40 weeks</p>
+        </div>
+        <div class="progress-right">
+          <h2>{{ progress_percent }}%</h2>
+          <p>Complete</p>
+        </div>
+      </div>
 
-<h3>Pregnancy Progress</h3>
+      <div class="progress-stats">
+        <div class="progress-stat">
+          <span class="progress-stat-value">{{ remaining_weeks }}</span>
+          <span class="progress-stat-label">Weeks left</span>
+        </div>
+        <div class="progress-stat">
+          <span class="progress-stat-value">{{ current_month }}</span>
+          <span class="progress-stat-label">Month</span>
+        </div>
+        <div class="progress-stat">
+          <span class="progress-stat-value">T{{ current_trimester|default:"?" }}</span>
+          <span class="progress-stat-label">Trimester</span>
+        </div>
+      </div>
 
-<div class="pregnancy-header">
-<span class="week-label">Week {{ current_week }}</span>
-<span class="weeks-left">{{ remaining_weeks }} weeks left</span>
-</div>
+      <div class="pregnancy-bar">
+        <div class="pregnancy-progress-fill" style="width: {{ progress_percent }}%;"></div>
+      </div>
 
-<div class="pregnancy-bar">
-<div class="pregnancy-progress-fill" style="width: {{ progress_percent }}%"></div>
-</div>
+      <p class="due-date">Due Date: {{ due_date }}</p>
+    </div>
 
-<div class="pregnancy-info">
+    <!-- Baby Size Card -->
+    <div class="card baby-size-card">
+      <h3>Baby's Size This Week</h3>
 
-<div class="pregnancy-text">
+      {% if current_week < 3 %}
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: auto;">
+          Baby development begins around week 3.
+        </p>
+      {% else %}
+        <div class="baby-size-content">
+          <div class="baby-size-text">
+            <p>About the size of a</p>
+            <h4>{{ baby_size }}</h4>
+          </div>
+          <div class="baby-size-image">
+            <img src="{% static baby_image %}" alt="{{ baby_size }}">
+          </div>
+        </div>
+      {% endif %}
+    </div>
 
-<p class="progress-caption">
-You're in the 
-<strong>
-{% if current_week < 13 %}
-first
-{% elif current_week < 27 %}
-second
-{% else %}
-third
-{% endif %}
-</strong>
-trimester
-</p>
+    <!-- Current Focus Card -->
+    <div class="card focus-card">
+      <h3>This Month's Focus</h3>
+      <ul class="focus-list">
+        {% for item in timeline|slice:":1" %}
+          {% for task in item.tasks %}
+            <li>
+              <input type="checkbox" id="focus_{{ forloop.counter }}">
+              <label for="focus_{{ forloop.counter }}">{{ task }}</label>
+            </li>
+          {% endfor %}
+        {% endfor %}
+      </ul>
+    </div>
 
-<p class="progress-caption">
-Your baby is about the size of a <strong>{{ baby_size }}</strong>
-</p>
+  </div>
 
-</div>
+  <!-- Milestones -->
+  <h2 class="section-title">Upcoming Milestones</h2>
 
-<div class="baby-visual">
-<img src="{% static baby_image %}" alt="Baby size">
-</div>
+  <div class="timeline">
+    {% for item in timeline %}
+      <div class="timeline-item {% if item.month == current_month %}current{% endif %}">
 
-</div>
+        <div class="timeline-dot"></div>
 
-</div>
+        <div class="timeline-content">
 
+          <h3 class="timeline-month-title">
+            Month {{ item.month }}
+            {% if item.month == current_month %}
+              <span class="current-badge">You are here</span>
+            {% endif %}
+          </h3>
 
-<!-- Current Focus -->
+          <div class="timeline-detail-grid">
 
-<div class="card focus-card">
+            <div class="timeline-section timeline-section-focus">
+              <p class="timeline-section-label">Focus</p>
+              <ul class="timeline-task-list">
+                {% for task in item.tasks %}
+                  <li>{{ task }}</li>
+                {% endfor %}
+              </ul>
+            </div>
 
-<h3>This Month's Focus</h3>
+            {% if item.appointments %}
+            <div class="timeline-section timeline-section-appt">
+              <p class="timeline-section-label">Appointments</p>
+              <ul class="timeline-task-list">
+                {% for appt in item.appointments %}
+                  <li>{{ appt }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+            {% endif %}
 
-<ul class="focus-list">
+            {% if item.budget_tips %}
+            <div class="timeline-section timeline-section-budget">
+              <p class="timeline-section-label">Budget Tips</p>
+              <ul class="timeline-task-list">
+                {% for tip in item.budget_tips %}
+                  <li>{{ tip }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+            {% endif %}
 
-{% for item in timeline|slice:":1" %}
-{% for task in item.tasks %}
-<li>{{ task }}</li>
-{% endfor %}
-{% endfor %}
+          </div>
 
-</ul>
+        </div>
 
-</div>
-
-</div>
-
-
-<h3 class="section-title">Upcoming Milestones</h3>
-
-<div class="timeline">
-
-{% for item in timeline %}
-
-<div class="timeline-item {% if item.month == current_month %}current{% endif %}">
-
-<div class="timeline-dot"></div>
-
-<div class="timeline-content">
-
-<div class="timeline-row">
-
-<div class="timeline-text">
-
-<h3>
-Month {{ item.month }}
-{% if item.month == current_month %}
-— You are here
-{% endif %}
-</h3>
-
-<ul>
-{% for task in item.tasks %}
-<li>{{ task }}</li>
-{% endfor %}
-</ul>
-
-</div>
-
-<div class="timeline-icon">
-<img class="icon-{{ item.icon_type }}" src="{% static item.icon %}" alt="Month icon">
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-{% endfor %}
-
-</div>
+      </div>
+    {% endfor %}
+  </div>
 
 </div>
 

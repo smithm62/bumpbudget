@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if editing %}Edit expense{% else %}Add expense{% endif %} — BumpBudget{% endblock %}
+
+{% block content %}
+<div class="form-page">
+  <div class="form-page-header">
+    <a href="{% url 'dashboard' %}" class="back-link">← Dashboard</a>
+    <h2>{% if editing %}Edit expense{% else %}Add expense{% endif %}</h2>
+  </div>
+
+  <div class="card form-card">
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label class="form-label" for="id_category">Category</label>
+        {{ form.category }}
+        {% if form.category.errors %}<p class="form-error">{{ form.category.errors|join:", " }}</p>{% endif %}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_description">Description</label>
+        {{ form.description }}
+        {% if form.description.errors %}<p class="form-error">{{ form.description.errors|join:", " }}</p>{% endif %}
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="id_amount">Amount</label>
+          {{ form.amount }}
+          {% if form.amount.errors %}<p class="form-error">{{ form.amount.errors|join:", " }}</p>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="id_date">Date</label>
+          {{ form.date }}
+          {% if form.date.errors %}<p class="form-error">{{ form.date.errors|join:", " }}</p>{% endif %}
+        </div>
+      </div>
+
+      <div class="form-group form-check-group">
+        <label class="form-check-label">
+          {{ form.is_upcoming }}
+          {{ form.is_upcoming.label }}
+        </label>
+        <p class="form-hint">{{ form.is_upcoming.help_text }}</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_milestone">{{ form.milestone.label }}</label>
+        {{ form.milestone }}
+        <p class="form-hint">{{ form.milestone.help_text }}</p>
+        {% if form.milestone.errors %}<p class="form-error">{{ form.milestone.errors|join:", " }}</p>{% endif %}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_notes">Notes (optional)</label>
+        {{ form.notes }}
+        {% if form.notes.errors %}<p class="form-error">{{ form.notes.errors|join:", " }}</p>{% endif %}
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          {% if editing %}Save changes{% else %}Add expense{% endif %}
+        </button>
+        <a href="{% url 'dashboard' %}" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+
+  {% if editing %}
+  <div class="danger-zone">
+    <form method="post" action="{% url 'delete_expense' form.instance.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger"
+              onclick="return confirm('Delete this expense?')">Delete expense</button>
+    </form>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

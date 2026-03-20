@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}{{ post.title }} — Community{% endblock %}
+
+{% block content %}
+
+<div style="margin-bottom:1rem;">
+  <a href="{% url 'community' %}" class="back-link">← Community</a>
+</div>
+
+<!-- Post -->
+<div class="comm-post-card comm-post-full">
+
+  <div class="comm-post-header">
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+      <div class="comm-avatar comm-avatar-lg">{{ post.display_name|first|upper }}</div>
+      <div>
+        <span class="comm-author">{{ post.display_name }}</span>
+        {% if post.is_anonymous %}<span class="comm-anon-badge">anonymous</span>{% endif %}
+        <span class="comm-dot">·</span>
+        <span class="comm-time">{{ post.created_at|timesince }} ago</span>
+        {% if post.updated_at != post.created_at %}
+          <span class="comm-time"> · edited</span>
+        {% endif %}
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <span class="comm-cat-pill">{{ post.get_category_display }}</span>
+      {% if post.is_pinned %}<span class="comm-pin-badge">Pinned</span>{% endif %}
+    </div>
+  </div>
+
+  <h2 class="comm-post-title-full">{{ post.title }}</h2>
+  <div class="comm-post-body">{{ post.body|linebreaks }}</div>
+
+  <div class="comm-post-footer">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <form method="post" action="{% url 'toggle_like' post.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="comm-like-btn {% if user_liked %}liked{% endif %}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="{% if user_liked %}currentColor{% else %}none{% endif %}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          {{ post.like_count }} {% if post.like_count == 1 %}like{% else %}likes{% endif %}
+        </button>
+      </form>
+      <span class="comm-reply-link" style="cursor:default;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        {{ post.reply_count }} {% if post.reply_count == 1 %}reply{% else %}replies{% endif %}
+      </span>
+    </div>
+
+    <div style="display:flex;gap:8px;">
+      {% if post.author == request.user %}
+        <a href="{% url 'edit_post' post.pk %}" class="comm-action-link">Edit</a>
+        <form method="post" action="{% url 'delete_post' post.pk %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="comm-action-link danger"
+                  onclick="return confirm('Delete this post?')">Delete</button>
+        </form>
+      {% endif %}
+      {% if request.user.is_staff %}
+        <form method="post" action="{% url 'pin_post' post.pk %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="comm-action-link">{% if post.is_pinned %}Unpin{% else %}Pin{% endif %}</button>
+        </form>
+        <form method="post" action="{% url 'remove_post' post.pk %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="comm-action-link danger"
+                  onclick="return confirm('Remove this post?')">Remove</button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Replies -->
+<div style="margin:1.5rem 0 1rem;">
+  <h3 style="font-size:15px;font-weight:700;color:var(--text);">
+    {{ post.reply_count }} {% if post.reply_count == 1 %}reply{% else %}replies{% endif %}
+  </h3>
+</div>
+
+{% for reply in replies %}
+<div class="comm-reply-card">
+  <div class="comm-reply-header">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="comm-avatar comm-avatar-sm">{{ reply.display_name|first|upper }}</div>
+      <div>
+        <span class="comm-author">{{ reply.display_name }}</span>
+        {% if reply.is_anonymous %}<span class="comm-anon-badge">anonymous</span>{% endif %}
+        <span class="comm-dot">·</span>
+        <span class="comm-time">{{ reply.created_at|timesince }} ago</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      {% if reply.author == request.user %}
+        <form method="post" action="{% url 'delete_reply' reply.pk %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="comm-action-link danger"
+                  onclick="return confirm('Delete reply?')">Delete</button>
+        </form>
+      {% endif %}
+      {% if request.user.is_staff %}
+        <form method="post" action="{% url 'remove_reply' reply.pk %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="comm-action-link danger"
+                  onclick="return confirm('Remove reply?')">Remove</button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+  <div class="comm-reply-body">{{ reply.body|linebreaks }}</div>
+</div>
+{% empty %}
+<div class="card" style="text-align:center;padding:1.5rem;">
+  <p class="small">No replies yet — be the first to respond.</p>
+</div>
+{% endfor %}
+
+<!-- Reply form -->
+<div class="comm-reply-form-card">
+  <h3 style="font-size:14px;font-weight:700;margin-bottom:12px;">Write a reply</h3>
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      {{ reply_form.body }}
+      {% if reply_form.body.errors %}
+        <p class="form-error">{{ reply_form.body.errors|join:", " }}</p>
+      {% endif %}
+    </div>
+    <div class="form-check-group" style="margin-bottom:12px;">
+      <label class="form-check-label">
+        {{ reply_form.is_anonymous }}
+        {{ reply_form.is_anonymous.label }}
+      </label>
+    </div>
+    <button type="submit" class="btn btn-primary">Post reply</button>
+  </form>
+</div>
+
+{% endblock %}

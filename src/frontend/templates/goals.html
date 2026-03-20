@@ -2,62 +2,137 @@
 {% load static %}
 {% block content %}
 
-<section class="feature-image" style="text-align: center;">
-  <img
-    src="{% static 'images/goals.png' %}"
-    alt="Planning finances for your baby"
-    width="900"
-  >
-</section>
+<div class="page-content">
 
-<br>
-<br>
-<section class="card goals-box">
+  <!-- ===== HERO ===== -->
+  <div class="goals-hero">
+    <div class="goals-hero-left">
+      <p class="goals-hero-eyebrow">Your financial journey</p>
+      <h1 class="goals-hero-title">Every big journey<br><em>starts with a goal.</em></h1>
+      <p class="goals-hero-sub">Tick off milestones as you go — you've got this.</p>
+    </div>
+    <div class="goals-hero-right">
+      <div class="goals-hero-badge">
+        <span class="goals-hero-badge-num">{{ goals_complete }}</span>
+        <span class="goals-hero-badge-of">of {{ goals_total }}</span>
+        <span class="goals-hero-badge-label">goals done</span>
+      </div>
+      <div class="goals-hero-arc">
+        <svg viewBox="0 0 160 160" width="160" height="160">
+          <circle cx="80" cy="80" r="66" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="12"/>
+          <circle cx="80" cy="80" r="66" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="12"
+            stroke-linecap="round"
+            stroke-dasharray="{{ goals_dash_hero }} 415"
+            stroke-dashoffset="104"
+            style="transition: stroke-dasharray 1.2s ease;"/>
+        </svg>
+      </div>
+    </div>
+  </div>
 
-  <label class="goal-item">
-    <input type="checkbox">
-    <span>
-      <strong>Build an emergency fund</strong><br>
-      Set aside savings to cover unexpected medical or household expenses.
-    </span>
-  </label>
-<br>
-<br>
-  <label class="goal-item">
-    <input type="checkbox">
-    <span>
-      <strong>Plan for maternity or parental leave</strong><br>
-      Prepare for reduced income during time off work.
-    </span>
-  </label>
-<br>
-<br>
-  <label class="goal-item">
-    <input type="checkbox">
-    <span>
-      <strong>Save for baby essentials</strong><br>
-      Budget for one-off costs such as furniture, clothing, and equipment.
-    </span>
-  </label>
-<br>
-<br>
-  <label class="goal-item">
-    <input type="checkbox">
-    <span>
-      <strong>Prepare for childcare costs</strong><br>
-      Estimate future childcare expenses and available supports.
-    </span>
-  </label>
-<br>
-<br>
-  <label class="goal-item">
-    <input type="checkbox">
-    <span>
-      <strong>Create a long-term savings plan</strong><br>
-      Consider ongoing savings for future family needs.
-    </span>
-  </label>
+  <!-- ===== SAVINGS SPOTLIGHT ===== -->
+  {% if profile.savings_goal_total %}
+  <div class="card goals-savings-spotlight">
+    <div class="savings-spotlight-left">
+      <p class="card-label">Savings Goal</p>
+      <p class="savings-spotlight-amount">€{{ total_saved }} <span>/ €{{ profile.savings_goal_total }}</span></p>
+      <div class="savings-spotlight-bar-wrap">
+        <div class="savings-spotlight-bar" style="--bar-w: {{ savings_pct }}%;"></div>
+        <span class="savings-spotlight-pct">{{ savings_pct }}%</span>
+      </div>
+      {% if profile.savings_deadline %}
+        <p class="savings-spotlight-deadline">Deadline · {{ profile.savings_deadline|date:"d M Y" }}</p>
+      {% endif %}
+    </div>
+    <div class="savings-spotlight-right">
+      <div class="savings-spotlight-stat">
+        <span class="ssl-val">€{{ savings_remaining }}</span>
+        <span class="ssl-lbl">Still needed</span>
+      </div>
+      <form method="post" action="{% url 'add_savings' %}" class="savings-spotlight-form">
+        {% csrf_token %}
+        <input type="number" name="amount" placeholder="Amount (€)" step="0.01" min="0.01" required>
+        <input type="date" name="date" required>
+        <button type="submit" class="tracker-form-btn">+ Log savings</button>
+      </form>
+    </div>
+  </div>
 
-</section>
+  {% if savings_logs %}
+  <div class="savings-log-wrap">
+    <p class="savings-log-title">Recent Logs</p>
+    <div class="savings-log-list">
+      {% for log in savings_logs %}
+      <div class="savings-log-item">
+        <div class="savings-log-dot"></div>
+        <span class="savings-log-date">{{ log.date|date:"d M Y" }}</span>
+        {% if log.note %}<span class="savings-log-note">{{ log.note }}</span>{% endif %}
+        <span class="savings-log-amount">+ €{{ log.amount }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% endif %}
+
+  <!-- ===== GOAL CARDS ===== -->
+  <div class="goals-grid">
+
+    {% for goal in goals %}
+    <form method="post" action="{% url 'toggle_goal' goal.id %}" class="goal-card-v2 {% if goal.completed %}goal-card-v2-done{% endif %}">
+      {% csrf_token %}
+
+      <!-- Image area -->
+      <div class="goal-img-wrap goal-img-{{ goal.colour }}">
+        {% if goal.image %}
+          <img src="{% static goal.image %}" alt="{{ goal.title }}" class="goal-img">
+        {% else %}
+          <span class="goal-emoji">{{ goal.icon }}</span>
+        {% endif %}
+
+        <!-- Tick overlay -->
+        <button type="submit" class="goal-tick {% if goal.completed %}goal-tick-done{% endif %}" title="Mark complete">
+          {% if goal.completed %}✓{% endif %}
+        </button>
+      </div>
+
+      <!-- Text -->
+      <div class="goal-card-v2-body">
+        <h4 class="goal-card-v2-title {% if goal.completed %}goal-v2-done-title{% endif %}">{{ goal.title }}</h4>
+        <p class="goal-card-v2-desc">{{ goal.description }}</p>
+      </div>
+
+      <!-- Completion ribbon -->
+      {% if goal.completed %}
+      <div class="goal-done-ribbon">Done ✓</div>
+      {% endif %}
+
+    </form>
+    {% empty %}
+      <p class="tracker-hint" style="grid-column:1/-1; padding: 2rem 0;">Goals will appear here automatically.</p>
+    {% endfor %}
+
+  </div>
+
+  <!-- ===== MOTIVATION STRIP ===== -->
+  <div class="goals-motivation-strip">
+    <div class="motivation-item">
+      <span class="motivation-icon">🌱</span>
+      <p>Small steps add up to big changes.</p>
+    </div>
+    <div class="motivation-divider"></div>
+    <div class="motivation-item">
+      <span class="motivation-icon">💛</span>
+      <p>You're preparing something wonderful.</p>
+    </div>
+    <div class="motivation-divider"></div>
+    <div class="motivation-item">
+      <span class="motivation-icon">🎯</span>
+      <p>Every goal ticked is a win worth celebrating.</p>
+    </div>
+  </div>
+
+</div>
 
 {% endblock %}

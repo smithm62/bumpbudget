@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}My Profile — BumpBudget{% endblock %}
+
+{% block content %}
+
+<div class="profile-hero">
+  <div class="profile-hero-left">
+    <div class="profile-avatar">
+      {{ profile.first_name|first|upper }}{{ user.username|first|upper }}
+    </div>
+
+    <div>
+      <div class="profile-name">
+        {{ profile.first_name|default:user.username }}
+        <span class="profile-stage-badge">
+          {{ profile.get_life_stage_display|truncatewords:1 }}
+        </span>
+      </div>
+
+      <div class="profile-meta">
+        Member since {{ user.date_joined|date:"M Y" }} · {{ profile.get_currency_display }}
+      </div>
+    </div>
+  </div>
+
+  {% if pregnancy_week %}
+    <div class="profile-week">
+      <div class="profile-week-num">Week {{ pregnancy_week }}</div>
+      <div class="profile-week-sub">of 40 · T{{ trimester }}</div>
+    </div>
+  {% endif %}
+</div>
+
+<div class="profile-grid">
+  <div class="profile-col">
+
+    <div class="card profile-card">
+      <div class="profile-section-title">Personal</div>
+
+      <div class="profile-row">
+        <span class="profile-label">First name</span>
+        <span class="profile-value">{{ profile.first_name|default:"—" }}</span>
+      </div>
+
+      <div class="profile-row">
+        <span class="profile-label">Username</span>
+        <span class="profile-value">{{ user.username }}</span>
+      </div>
+
+      <div class="profile-row">
+        <span class="profile-label">Email</span>
+        <span class="profile-value">{{ user.email|default:"—" }}</span>
+      </div>
+
+      <div class="profile-row">
+        <span class="profile-label">Currency</span>
+        <span class="profile-value">{{ profile.get_currency_display }}</span>
+      </div>
+    </div>
+
+    <div class="card profile-card">
+      <div class="profile-section-title">Pregnancy</div>
+
+      <div class="profile-row">
+        <span class="profile-label">Life stage</span>
+        <span class="profile-value">{{ profile.get_life_stage_display|truncatewords:1 }}</span>
+      </div>
+
+      {% if profile.due_date %}
+        <div class="profile-row">
+          <span class="profile-label">Due date</span>
+          <span class="profile-value">{{ profile.due_date|date:"j M Y" }}</span>
+        </div>
+
+        <div class="profile-row">
+          <span class="profile-label">Current week</span>
+          <span class="profile-value">
+            Week {{ pregnancy_week }}
+            <span class="profile-trimester-badge">T{{ trimester }}</span>
+          </span>
+        </div>
+
+        <div class="profile-row">
+          <span class="profile-label">Weeks remaining</span>
+          <span class="profile-value">{{ weeks_until_due }} weeks</span>
+        </div>
+      {% endif %}
+
+      {% if profile.child_age_months is not None %}
+        <div class="profile-row">
+          <span class="profile-label">Child's age</span>
+          <span class="profile-value">{{ profile.child_age_months }} months</span>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if profile.maternity_leave_start or profile.maternity_leave_end %}
+      <div class="card profile-card">
+        <div class="profile-section-title">Maternity leave</div>
+
+        {% if profile.maternity_leave_start %}
+          <div class="profile-row">
+            <span class="profile-label">Leave starts</span>
+            <span class="profile-value">{{ profile.maternity_leave_start|date:"j M Y" }}</span>
+          </div>
+        {% endif %}
+
+        {% if profile.maternity_leave_end %}
+          <div class="profile-row">
+            <span class="profile-label">Leave ends</span>
+            <span class="profile-value">{{ profile.maternity_leave_end|date:"j M Y" }}</span>
+          </div>
+
+          {% if profile.maternity_leave_start %}
+            <div class="profile-row">
+              <span class="profile-label">Duration</span>
+              <span class="profile-value">
+                {% with start=profile.maternity_leave_start end=profile.maternity_leave_end %}
+                  {{ end|timeuntil:start }}
+                {% endwith %}
+              </span>
+            </div>
+          {% endif %}
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <a href="{% url 'profile_setup' %}" class="btn btn-primary" style="display: inline-block;">
+      Edit profile →
+    </a>
+
+  </div>
+
+  <div class="profile-col">
+
+    <div class="card profile-card">
+      <div class="profile-section-title">Income</div>
+
+      <div class="profile-row">
+        <span class="profile-label">Your monthly income</span>
+        <span class="profile-value">
+          {{ profile.currency_symbol }}{{ profile.monthly_income|floatformat:0|intcomma }}
+        </span>
+      </div>
+
+      {% if profile.partner_monthly_income %}
+        <div class="profile-row">
+          <span class="profile-label">Partner's income</span>
+          <span class="profile-value">
+            {{ profile.currency_symbol }}{{ profile.partner_monthly_income|floatformat:0|intcomma }}
+          </span>
+        </div>
+
+        <div class="profile-row">
+          <span class="profile-label">Combined monthly</span>
+          <span class="profile-value profile-value-highlight">
+            {{ profile.currency_symbol }}{{ monthly_income|floatformat:0|intcomma }}
+          </span>
+        </div>
+      {% endif %}
+    </div>
+
+<div class="card profile-card">
+      <div class="profile-section-title">Account at a glance</div>
+
+      <div class="profile-stats-grid">
+        <div class="profile-stat">
+          <div class="profile-stat-label">Expenses logged</div>
+          <div class="profile-stat-val">{{ expense_count }}</div>
+        </div>
+
+        <div class="profile-stat">
+          <div class="profile-stat-label">Savings goals</div>
+          <div class="profile-stat-val">{{ goals_count }}</div>
+        </div>
+
+        <div class="profile-stat">
+          <div class="profile-stat-label">Total saved</div>
+          <div class="profile-stat-val profile-stat-green">
+            {{ profile.currency_symbol }}{{ total_saved|floatformat:0|intcomma }}
+          </div>
+        </div>
+
+        <div class="profile-stat">
+          <div class="profile-stat-label">Planned ahead</div>
+          <div class="profile-stat-val">
+            {{ profile.currency_symbol }}{{ registry_total|floatformat:0|intcomma }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="profile-danger-zone">
+  <div class="profile-section-title" style="color: #a32d2d; border-color: #f7c1c1;">
+    Account
+  </div>
+
+  <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+    Deleting your account is permanent and removes all your expenses, goals, and profile data.
+  </p>
+
+  <button class="btn btn-danger" onclick="return confirm('Are you sure? This cannot be undone.')">
+    Delete account
+  </button>
+</div>
+
+{% endblock %}

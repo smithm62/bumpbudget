@@ -1,96 +1,191 @@
 {% extends "base.html" %}
 {% load static %}
+{% load humanize %}
+
+{% block title %}Dashboard — BumpBudget{% endblock %}
 
 {% block content %}
-<section class="dashboard">
 
- <div class="welcome-block">
-  <h2 class="welcome-title">Welcome, {{ user.username }}</h2>
-  <p class="intro">
-    This is your personal financial dashboard for pregnancy and early parenthood.
-  </p>
+<div class="dashboard-header">
+  <div>
+    <h2 class="welcome-title">
+      {% if profile.first_name %}
+        Hi {{ profile.first_name }}
+      {% else %}
+        Hi {{ user.username }}
+      {% endif %}
+    </h2>
 
-  <div class="profile-summary">
-    <div class="summary-item">
-      <span class="label">Due date</span>
-      <span class="value">{{ profile.due_date }}</span>
+    <p class="intro">
+      {% if pregnancy_week %}
+        Week {{ pregnancy_week }} of 40 · {{ profile.get_life_stage_display }}
+      {% else %}
+        {{ profile.get_life_stage_display }}
+      {% endif %}
+    </p>
+  </div>
+
+  {% if profile.due_date %}
+    <div class="due-badge">
+      Due {{ profile.due_date|date:"j M Y" }}
+      {% if weeks_until_due is not None %}
+        · {{ weeks_until_due }}w away
+      {% endif %}
     </div>
+  {% endif %}
+</div>
 
-    <div class="summary-item">
-      <span class="label">First child</span>
-      <span class="value">
-        {% if profile.first_child %}Yes{% else %}No{% endif %}
-      </span>
-    </div>
+<div class="summary-grid">
+  <div class="card">
+    <h3>Monthly budget</h3>
+    <p class="amount">{{ profile.currency_symbol }}{{ budget_goal|floatformat:0|intcomma }}</p>
+    <p class="note">your target</p>
+  </div>
+
+  <div class="card">
+    <h3>Spent this month</h3>
+    <p class="amount {% if remaining < 0 %}negative{% endif %}">
+      {{ profile.currency_symbol }}{{ total_expenses|floatformat:0|intcomma }}
+    </p>
+    <p class="note">
+      {% if remaining >= 0 %}
+        {{ profile.currency_symbol }}{{ remaining|floatformat:0|intcomma }} remaining
+      {% else %}
+        {{ profile.currency_symbol }}{{ remaining|floatformat:0|intcomma }} over budget
+      {% endif %}
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Total saved</h3>
+    <p class="amount positive">{{ profile.currency_symbol }}{{ total_saved|floatformat:0|intcomma }}</p>
+    <p class="note">across all goals</p>
+  </div>
+
+  <div class="card">
+    <h3>Planned ahead</h3>
+    <p class="amount">{{ profile.currency_symbol }}{{ registry_total|floatformat:0|intcomma }}</p>
+    <p class="note">upcoming expenses</p>
   </div>
 </div>
 
+{% if trimester_segments %}
+  <section class="card trimester-card">
+    <h3>Pregnancy progress · Week {{ pregnancy_week }} of 40</h3>
 
-  <!-- Summary cards -->
-  <div class="summary-grid">
-    <div class="card">
-      <h3>Monthly Income</h3>
-      <p class="amount">€{{ monthly_income }}</p>
-      {% if profile.partner_income %}
-        <p class="note">Includes partner income</p>
-      {% endif %}
+    <div class="tri-bar">
+      {% for seg in trimester_segments %}
+        <div class="tri-seg tri-{{ seg.state }}"></div>
+      {% endfor %}
     </div>
 
-    <div class="card">
-      <h3>Total Expenses</h3>
-      <p class="amount">€{{ total_expenses }}</p>
-      <p class="note">Temporary sample value</p>
-    </div>
-
-    <div class="card">
-      <h3>Remaining</h3>
-      {% if remaining >= 0 %}
-        <p class="amount positive">€{{ remaining }}</p>
-        <p class="note">You’re on track this month</p>
-      {% else %}
-        <p class="amount negative">€{{ remaining }}</p>
-        <p class="note">You’re over budget — try adjusting spend</p>
-      {% endif %}
-    </div>
-  </div>
-
-  <!-- Chart section -->
-  <section class="chart-section">
-    <h3>Spending Breakdown</h3>
-    <p class="small">
-      This chart will become fully personalised once expenses are connected to your account.
-    </p>
-
-    <div class="chart-container">
-      <canvas id="spendingChart"></canvas>
+    <div class="tri-labels">
+      <span>T1 · Wk 1–13</span>
+      <span>T2 · Wk 14–27</span>
+      <span>T3 · Wk 28–40</span>
     </div>
   </section>
+{% endif %}
 
-  <!-- Upcoming costs -->
-  <section class="upcoming">
-  <h3 class="section-title">Upcoming Costs</h3>
-  <p class="small">
-    Example upcoming costs (these will come from milestones + your saved expenses later).
-  </p>
+<div class="dash-columns">
+  <div class="dash-left">
 
-  <ul class="upcoming-list">
-    <li>
-      <span class="cost-label">GP appointment</span>
-      <span class="cost-amount">€60</span>
-    </li>
-    <li>
-      <span class="cost-label">Baby essentials</span>
-      <span class="cost-amount">€120</span>
-    </li>
-    <li>
-      <span class="cost-label">Childcare deposit</span>
-      <span class="cost-amount">€300</span>
-    </li>
-  </ul>
-</section>
+{% include "savings.html" %}
+
+    <section class="chart-section card">
+      <div class="section-header">
+        <h3>Spending breakdown</h3>
+        <a href="{% url 'expense_list' %}" class="section-link">View all →</a>
+      </div>
+
+      {% if category_data %}
+        <div class="chart-container">
+          <canvas id="spendingChart"></canvas>
+        </div>
+      {% else %}
+        <p class="small">Add expenses to see your spending breakdown.</p>
+      {% endif %}
+
+      <script id="spending-data" type="application/json">{{ chart_data|safe }}</script>
+    </section>
+
+    <section class="card">
+      <div class="section-header">
+        <h3>Recent expenses</h3>
+        <a href="{% url 'add_expense' %}" class="section-link">+ Add →</a>
+      </div>
+
+      {% if recent_expenses %}
+        <ul class="expense-list">
+          {% for e in recent_expenses %}
+            <li class="expense-row">
+              <div>
+                <span class="cost-label">{{ e.description|default:e.get_category_display }}</span>
+                <span class="expense-cat">{{ e.get_category_display }} · {{ e.date|date:"j M" }}</span>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span class="cost-amount">{{ profile.currency_symbol }}{{ e.amount|floatformat:2|intcomma }}</span>
+                <a href="{% url 'edit_expense' e.pk %}" class="row-edit-link">edit</a>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="small">
+          No expenses yet.
+          <a href="{% url 'add_expense' %}">Add your first →</a>
+        </p>
+      {% endif %}
+    </section>
+
+  </div>
+
+  <div class="dash-right">
+
+    {% include "weekly_tip.html" %}
+    {% include "milestones.html" %}
+
+    <section class="upcoming card">
+      <div class="section-header">
+        <h3 class="section-title">Upcoming costs</h3>
+        <a href="{% url 'add_expense' %}" class="section-link">+ Plan →</a>
+      </div>
+
+      <ul class="upcoming-list">
+        {% for e in upcoming_expenses %}
+          <li>
+            <div>
+              <span class="cost-label">
+                {{ e.description|default:e.get_category_display }}
+                {% if e.is_upcoming %}
+                  <span class="upcoming-badge">planned</span>
+                {% endif %}
+              </span>
+              <span class="cost-meta">{{ e.date|date:"j M Y" }}</span>
+            </div>
+            <span class="cost-amount">€{{ e.amount|floatformat:2|intcomma }}</span>
+          </li>
+        {% empty %}
+          <li style="color: var(--text-muted); font-size: 14px;">
+            No upcoming costs planned.
+            <a href="{% url 'add_expense' %}" style="color: var(--purple);">Plan one →</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section class="card">
+      <h3>Quick actions</h3>
+      <div class="quick-actions">
+        <a href="{% url 'add_expense' %}" class="btn btn-primary">+ Add expense</a>
+        <a href="{% url 'add_savings_goal' %}" class="btn btn-outline">+ New goal</a>
+        <a href="{% url 'plan' %}" class="btn btn-outline">Set Plan</a>
+        <a href="{% url 'profile_setup' %}" class="btn btn-outline">Edit profile</a>
+      </div>
+    </section>
+
+  </div>
+</div>
 
 {% endblock %}
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="{% static 'js/dashboard.js' %}"></script>
-

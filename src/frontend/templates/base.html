@@ -2,59 +2,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>BumpBudget</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <meta charset="UTF-8">
+  <title>BumpBudget</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
 
+<!-- ========== STICKY HEADER ========== -->
 <header class="site-header">
-    <div class="brand">
-        <img src="{% static 'images/LOGO.png' %}" alt="BumpBudget logo">
-    </div>
-
-    <nav class="site-nav">
-        <a href="/">Home</a>
-        <a href="/faq/">FAQs</a>
-        <a href="/contact/">Contact</a>
-
-        {% if user.is_authenticated %}
-            <a href="/dashboard/">Dashboard</a>
-            <a href="/logout/">Log out</a>
-        {% else %}
-            <a href="/login/">Log in</a>
-            <a href="/register/">Sign up</a>
-        {% endif %}
-    </nav>
+  <div class="brand">
+    <a href="/"><img src="{% static 'images/LOGO.png' %}" alt="BumpBudget logo"></a>
+  </div>
 </header>
 
-<!-- APP LAYOUT -->
+<!-- ========== APP LAYOUT ========== -->
 <div class="app-layout">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <nav class="sidebar-nav">
-            <a href="/dashboard/">Dashboard</a>
-            <a href="/budget/">Budget</a>
-            <a href="/timeline/">Timeline</a>
-            <a href="/tracker/">Maternity Leave</a>
-            <a href="/goals/">Goals</a>
-            <a href="/resources/">Resources</a>
-        </nav>
-    </aside>
+  <!-- ========== SIDEBAR ========== -->
+  <aside class="sidebar">
 
-    <!-- PAGE CONTENT -->
-    <main class="page-content">
-        {% block content %}
-        {% endblock %}
-    </main>
+    <nav class="sidebar-nav">
+      <a href="/dashboard/"  class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">Dashboard</a>
+      <a href="/plan/"       class="{% if request.resolver_match.url_name == 'plan' %}active{% endif %}">Plans</a>
+      <a href="/timeline/"   class="{% if request.resolver_match.url_name == 'timeline' %}active{% endif %}">Timeline</a>
+      <a href="/tracker/"    class="{% if request.resolver_match.url_name == 'tracker' %}active{% endif %}">Maternity Leave</a>
+      <a href="/goals/"      class="{% if request.resolver_match.url_name == 'goals' %}active{% endif %}">Goals</a>
+      <a href="/resources/"  class="{% if request.resolver_match.url_name == 'resources' %}active{% endif %}">Resources</a>
+      <a href="/community/"  class="{% if request.resolver_match.url_name == 'community' %}active{% endif %}">Community</a>
+    </nav>
+
+    {% if user.is_authenticated %}
+    <div class="sidebar-profile" id="profileTrigger">
+      <div class="sidebar-avatar">
+        {{ user.first_name|slice:":1"|upper }}{{ user.last_name|slice:":1"|upper }}
+      </div>
+      <div class="sidebar-user-info">
+        <span class="sidebar-username">{{ user.first_name }} {{ user.last_name }}</span>
+        <span class="sidebar-useremail">{{ user.email }}</span>
+      </div>
+      <span class="sidebar-chevron">···</span>
+
+      <div class="profile-popup" id="profilePopup">
+        <a href="/profile/" class="profile-popup-item">
+          <span class="popup-icon">⚙</span> View Profile
+        </a>
+        <a href="/faq/" class="profile-popup-item">
+          <span class="popup-icon">?</span> FAQs
+        </a>
+        <a href="/contact/" class="profile-popup-item">
+          <span class="popup-icon">✉</span> Contact
+        </a>
+        <div class="profile-popup-divider"></div>
+        <a href="/logout/" class="profile-popup-item profile-popup-logout">
+          <span class="popup-icon">→</span> Log Out
+        </a>
+      </div>
+    </div>
+    {% endif %}
+
+  </aside>
+
+  <!-- ========== PAGE CONTENT ========== -->
+  <main class="page-content">
+    {% block content %}{% endblock %}
+  </main>
 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{% static 'js/ui.js' %}"></script>
 
+<script>
+  const trigger = document.getElementById('profileTrigger');
+  const popup   = document.getElementById('profilePopup');
+  if (trigger) {
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      popup.classList.toggle('open');
+    });
+    document.addEventListener('click', () => popup.classList.remove('open'));
+    popup.addEventListener('click', (e) => e.stopPropagation());
+  }
+</script>
+
 </body>
 </html>
+
+</body>
+<div class="lp-footer">
+  <div class="container">
+
+    <div class="footer-top">
+
+      <div>
+        <div class="footer-brand-name">BumpBudget</div>
+        <div class="footer-brand-desc">
+          Plan parenthood, not panic. Helping you stay in control of your finances through every stage.
+        </div>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Product</div>
+        <ul class="footer-links">
+          <li><a href="#">Dashboard</a></li>
+          <li><a href="#">Budget</a></li>
+          <li><a href="#">Goals</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Resources</div>
+        <ul class="footer-links">
+          <li><a href="#">FAQs</a></li>
+          <li><a href="#">Guides</a></li>
+          <li><a href="#">Support</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Company</div>
+        <ul class="footer-links">
+          <li><a href="#">About</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="footer-divider"></div>
+
+    <div class="footer-bottom">
+      <span>© 2026 BumpBudget</span>
+
+      <div class="footer-bottom-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+      </div>
+    </div>
+
+  </div>
+</div>

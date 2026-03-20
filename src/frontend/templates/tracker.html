@@ -1,81 +1,260 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
 
-<div class="timeline-container">
+<div class="page-content">
 
-<h1>Your Bump Journey</h1>
+  <!-- Page Heading -->
+  <div class="page-heading">
+    <h1>Maternity Leave Tracker</h1>
+    {% if days_until_leave is not None and days_until_leave > 0 %}
+      <span class="weeks-remaining-tag">{{ days_until_leave }} days until leave</span>
+    {% elif days_until_leave == 0 %}
+      <span class="weeks-remaining-tag">Leave starts today!</span>
+    {% endif %}
+  </div>
 
-<p>Week {{ current_week }} of 40</p>
+  {% if not profile.maternity_leave_start %}
+  <div class="card tracker-empty-card">
+    <p class="tracker-empty-title">Set your maternity leave dates to get started</p>
+    <p class="tracker-hint">Add your leave start, end dates, and employer package in your profile.</p>
+    <a href="/profile-setup/" class="btn" style="margin-top:1.25rem; display:inline-block;">Update Profile</a>
+  </div>
 
-<div class="progress-bar">
-    <div class="progress" style="width: {{ progress_percent }}%"></div>
-</div>
+  {% else %}
 
+  <!-- ===== TOP: Countdown + Summary Stats ===== -->
+  <div class="tracker-summary-grid">
 
-<div class="timeline">
-
-<div class="timeline-item">
-    <div class="timeline-dot"></div>
-    <div class="timeline-content">
-        <h3>Month 4</h3>
-        <ul>
-            <li>First big scan</li>
-            <li>Start thinking about baby names</li>
-        </ul>
+    <div class="card tracker-countdown-card">
+      <p class="card-label">Leave Starts</p>
+      <div class="countdown-date">{{ profile.maternity_leave_start|date:"d F Y" }}</div>
+      {% if days_until_leave > 0 %}
+        <div class="countdown-ring-wrap">
+          <svg class="countdown-ring" viewBox="0 0 120 120">
+            <circle class="ring-bg" cx="60" cy="60" r="50"/>
+            <circle class="ring-fill" cx="60" cy="60" r="50"
+              stroke-dasharray="{{ countdown_dash }} 314"
+              stroke-dashoffset="0"/>
+          </svg>
+          <div class="countdown-ring-text">
+            <span class="countdown-days">{{ days_until_leave }}</span>
+            <span class="countdown-label">days</span>
+          </div>
+        </div>
+        <p class="countdown-sub">{{ weeks_until_leave }} weeks away · ends {{ profile.maternity_leave_end|date:"d F Y" }}</p>
+      {% else %}
+        <p class="countdown-active">You are currently on maternity leave</p>
+        <p class="countdown-sub">Leave ends {{ profile.maternity_leave_end|date:"d F Y" }}</p>
+      {% endif %}
     </div>
-</div>
 
+    <div class="card tracker-stats-card">
+      <p class="card-label">Leave Summary</p>
+      <div class="leave-stats-grid">
+        <div class="leave-stat">
+          <span class="leave-stat-value">{{ leave_weeks_total }}w</span>
+          <span class="leave-stat-label">Total Leave</span>
+        </div>
+        <div class="leave-stat">
+          <span class="leave-stat-value">{{ paid_weeks }}w</span>
+          <span class="leave-stat-label">Paid Weeks</span>
+        </div>
+        <div class="leave-stat">
+          <span class="leave-stat-value">€{{ monthly_income }}</span>
+          <span class="leave-stat-label">Normal Monthly Pay</span>
+        </div>
+        <div class="leave-stat loss">
+          <span class="leave-stat-value">€{{ total_leave_cost }}</span>
+          <span class="leave-stat-label">Total Income Lost</span>
+        </div>
+        <div class="leave-stat">
+          <span class="leave-stat-value">€{{ avg_monthly_during_leave }}</span>
+          <span class="leave-stat-label">Avg Monthly During Leave</span>
+        </div>
+        <div class="leave-stat">
+          <span class="leave-stat-value">€{{ income_drop }}</span>
+          <span class="leave-stat-label">Biggest Monthly Drop</span>
+        </div>
+      </div>
 
-<div class="timeline-item">
-    <div class="timeline-dot"></div>
-    <div class="timeline-content">
-        <h3>Month 5</h3>
-        <ul>
-            <li>Gender reveal</li>
-            <li>Start baby registry</li>
-        </ul>
+      {% if not profile.employer_full_pay_weeks %}
+      <div class="tracker-package-hint">
+        <span>⚠</span>
+        <p>Using standard estimates — <a href="/profile-setup/">add your employer's package</a> for a personalised breakdown.</p>
+      </div>
+      {% endif %}
     </div>
-</div>
 
+  </div>
 
-<div class="timeline-item current">
-    <div class="timeline-dot"></div>
-    <div class="timeline-content">
-        <h3>Month 6 ⭐</h3>
-        <ul>
-            <li>Buy baby clothes</li>
-            <li>Plan nursery</li>
-            <li>Research childcare</li>
-        </ul>
+  <!-- ===== MIDDLE: Pay Phase Breakdown ===== -->
+  <h2 class="section-title">Pay Breakdown by Phase</h2>
+
+  <div class="phase-cards-grid">
+
+    <!-- Full Pay -->
+    <div class="phase-card phase-card-full">
+      <div class="phase-card-img-wrap phase-img-green">
+        {% if phase_full_weeks > 0 %}
+          <img src="{% static 'images/moon/full.png' %}" alt="Full Pay" class="phase-card-img"
+               onerror="this.style.display='none'">
+        {% endif %}
+        <span class="phase-card-weeks-badge">{{ phase_full_weeks }}w</span>
+      </div>
+      <div class="phase-card-body">
+        <h4 class="phase-card-title">Full Pay</h4>
+        <p class="phase-card-amount">€{{ phase_full_monthly }}<span>/month</span></p>
+        <p class="phase-card-dates">{{ phase_full_start|date:"d M" }} → {{ phase_full_end|date:"d M Y" }}</p>
+        <p class="phase-card-note">Your full salary paid by your employer.</p>
+      </div>
     </div>
-</div>
 
-
-<div class="timeline-item">
-    <div class="timeline-dot"></div>
-    <div class="timeline-content">
-        <h3>Month 7</h3>
-        <ul>
-            <li>Pack hospital bag</li>
-            <li>Prenatal classes</li>
-        </ul>
+    <!-- Half Pay -->
+    <div class="phase-card phase-card-half">
+      <div class="phase-card-img-wrap phase-img-sage">
+        {% if phase_half_weeks > 0 %}
+          <img src="{% static 'images/moon/half.png' %}" alt="Half Pay" class="phase-card-img"
+               onerror="this.style.display='none'">
+        {% endif %}
+        <span class="phase-card-weeks-badge">{{ phase_half_weeks }}w</span>
+      </div>
+      <div class="phase-card-body">
+        <h4 class="phase-card-title">Half Pay</h4>
+        <p class="phase-card-amount">€{{ phase_half_monthly }}<span>/month</span></p>
+        <p class="phase-card-dates">{{ phase_half_start|date:"d M" }} → {{ phase_half_end|date:"d M Y" }}</p>
+        <p class="phase-card-note">Your employer pays half your normal salary.</p>
+      </div>
     </div>
-</div>
 
-
-<div class="timeline-item">
-    <div class="timeline-dot"></div>
-    <div class="timeline-content">
-        <h3>Month 8</h3>
-        <ul>
-            <li>Install car seat</li>
-            <li>Finalise hospital plan</li>
-        </ul>
+    <!-- Statutory -->
+    <div class="phase-card phase-card-statutory">
+      <div class="phase-card-img-wrap phase-img-cream">
+        <img src="{% static 'images/moon/quater.png' %}" alt="Statutory" class="phase-card-img"
+             onerror="this.style.display='none'">
+        <span class="phase-card-weeks-badge">{{ phase_stat_weeks }}w</span>
+      </div>
+      <div class="phase-card-body">
+        <h4 class="phase-card-title">Statutory (MB)</h4>
+        <p class="phase-card-amount">€{{ phase_stat_monthly }}<span>/month</span></p>
+        <p class="phase-card-dates">{{ phase_stat_start|date:"d M" }} → {{ phase_stat_end|date:"d M Y" }}</p>
+        <p class="phase-card-note">€289/week from the Dept. of Social Protection. Requires PRSI contributions.</p>
+      </div>
     </div>
-</div>
 
-</div>
+    <!-- Unpaid -->
+    {% if phase_unpaid_weeks > 0 %}
+    <div class="phase-card phase-card-unpaid">
+      <div class="phase-card-img-wrap phase-img-grey">
+        <img src="{% static 'images/tracker/phase_unpaid.png' %}" alt="Unpaid" class="phase-card-img"
+             onerror="this.style.display='none'">
+        <span class="phase-card-weeks-badge">{{ phase_unpaid_weeks }}w</span>
+      </div>
+      <div class="phase-card-body">
+        <h4 class="phase-card-title">Unpaid Leave</h4>
+        <p class="phase-card-amount">€0<span>/month</span></p>
+        <p class="phase-card-dates">{{ phase_unpaid_start|date:"d M" }} → {{ phase_unpaid_end|date:"d M Y" }}</p>
+        <p class="phase-card-note">Optional unpaid leave. Your job is legally protected for up to 16 extra weeks.</p>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+
+  <!-- Monthly income chart -->
+  <div class="card phase-chart-card">
+    <p class="card-label">Estimated Monthly Income During Leave</p>
+    <div class="phase-chart">
+      {% for month in monthly_income_chart %}
+      <div class="phase-chart-col">
+        <div class="phase-chart-bar-wrap">
+          <div class="phase-chart-bar phase-chart-{{ month.phase }}"
+               style="--bar-h: {{ month.pct }}%;"
+               title="€{{ month.amount }}"></div>
+        </div>
+        <span class="phase-chart-label">{{ month.label }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="phase-chart-legend">
+      <span class="legend-dot phase-full-dot"></span> Full Pay
+      <span class="legend-dot phase-half-dot"></span> Half Pay
+      <span class="legend-dot phase-stat-dot"></span> Statutory
+      <span class="legend-dot phase-unpaid-dot"></span> Unpaid
+    </div>
+  </div>
+
+  <!-- ===== BOTTOM: Partner Leave ===== -->
+  <h2 class="section-title">Partner Leave</h2>
+
+  <div class="card partner-leave-card">
+    <div class="partner-leave-grid">
+
+      <div class="partner-info-block">
+        <p class="card-label">Paternity Leave (Ireland)</p>
+        <div class="partner-stat-row">
+          <div class="partner-stat">
+            <span class="partner-stat-value">2</span>
+            <span class="partner-stat-label">Weeks entitlement</span>
+          </div>
+          <div class="partner-stat">
+            <span class="partner-stat-value">€289/wk</span>
+            <span class="partner-stat-label">Paternity Benefit</span>
+          </div>
+          <div class="partner-stat">
+            <span class="partner-stat-value">26w</span>
+            <span class="partner-stat-label">Must take within</span>
+          </div>
+        </div>
+        <p class="partner-note">Your partner is entitled to 2 weeks paid Paternity Benefit from the Dept. of Social Protection, provided they have enough PRSI contributions. Must be taken within 26 weeks of the birth.</p>
+      </div>
+
+      <div class="partner-info-block">
+        <p class="card-label">Parent's Leave (Ireland)</p>
+        <div class="partner-stat-row">
+          <div class="partner-stat">
+            <span class="partner-stat-value">9</span>
+            <span class="partner-stat-label">Weeks each parent</span>
+          </div>
+          <div class="partner-stat">
+            <span class="partner-stat-value">€289/wk</span>
+            <span class="partner-stat-label">Parent's Benefit</span>
+          </div>
+          <div class="partner-stat">
+            <span class="partner-stat-value">2yr</span>
+            <span class="partner-stat-label">Must take within</span>
+          </div>
+        </div>
+        <p class="partner-note">Both parents can take 9 weeks of Parent's Leave each, paid at €289/week. Must be taken within the first 2 years of the child's birth or adoption.</p>
+      </div>
+
+      {% if profile.partner_monthly_income %}
+      <div class="partner-info-block partner-income-block">
+        <p class="card-label">Partner Income During Leave</p>
+        <div class="partner-stat-row">
+          <div class="partner-stat">
+            <span class="partner-stat-value">€{{ partner_paternity_pay }}</span>
+            <span class="partner-stat-label">Paternity (2 wks)</span>
+          </div>
+          <div class="partner-stat">
+            <span class="partner-stat-value">€{{ partner_normal_monthly }}</span>
+            <span class="partner-stat-label">Normal monthly</span>
+          </div>
+        </div>
+        <p class="partner-note">Based on partner income of €{{ profile.partner_monthly_income }}/month. Statutory benefit replaces 2 weeks of salary. Employer top-up varies.</p>
+      </div>
+      {% endif %}
+
+    </div>
+
+    <div class="partner-tip">
+      <span class="partner-tip-icon">💡</span>
+      <p>Tip: Apply for Paternity Benefit at least 4 weeks before your partner's leave starts at <strong>mywelfare.ie</strong>. You'll need the baby's PPS number after birth for Parent's Benefit.</p>
+    </div>
+  </div>
+
+  {% endif %}
 
 </div>
 

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}{% if editing %}Edit post{% else %}New post{% endif %} — Community{% endblock %}
+
+{% block content %}
+<div class="form-page">
+  <div class="form-page-header">
+    <a href="{% url 'community' %}" class="back-link">← Community</a>
+    <h2>{% if editing %}Edit post{% else %}New post{% endif %}</h2>
+  </div>
+
+  <div class="card" style="padding:1.5rem;">
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label class="form-label" for="id_category">Category</label>
+        {{ form.category }}
+        {% if form.category.errors %}<p class="form-error">{{ form.category.errors|join:", " }}</p>{% endif %}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_title">Title</label>
+        {{ form.title }}
+        {% if form.title.errors %}<p class="form-error">{{ form.title.errors|join:", " }}</p>{% endif %}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_body">{{ form.body.label }}</label>
+        {{ form.body }}
+        {% if form.body.errors %}<p class="form-error">{{ form.body.errors|join:", " }}</p>{% endif %}
+      </div>
+
+      <div class="form-check-group" style="margin-bottom:16px;">
+        <label class="form-check-label">
+          {{ form.is_anonymous }}
+          {{ form.is_anonymous.label }}
+        </label>
+        <p class="form-hint" style="margin-left:24px;">Your username and name will not appear on this post.</p>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          {% if editing %}Save changes{% else %}Post{% endif %}
+        </button>
+        <a href="{% url 'community' %}" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+
+  {% if editing %}
+  <div style="margin-top:12px;text-align:center;">
+    <form method="post" action="{% url 'delete_post' post.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger"
+              onclick="return confirm('Delete this post?')">Delete post</button>
+    </form>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

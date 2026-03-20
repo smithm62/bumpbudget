@@ -1,0 +1,67 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<!-- ===== ML: Cost Recommendation ===== -->
+  {% if ml %}
+  <h2 class="section-title">Your Personalised Cost Plan</h2>
+  <div class="card ml-card">
+
+    <div class="ml-card-top">
+      <div class="ml-intro">
+        <p class="card-label">Based on your income · CSO Ireland SIA205 2024</p>
+        <p class="ml-decile-tag">Your income places you in the <strong>{{ ml.decile_label }}</strong> of Irish earners</p>
+        <p class="ml-summary">
+          Saving 15% of your income gives you <strong>€{{ ml.savings_capacity }}/month</strong> to put aside.
+          Based on your income and <strong>{{ ml.months_remaining }} months</strong> until your due date,
+          we recommend the <strong class="ml-rec-label">{{ ml.recommended.label }}</strong> pregnancy plan
+          - you would need to save <strong>€{{ ml.recommended.monthly_required }}/month</strong> to cover €{{ ml.recommended.total }} in total costs.
+        </p>
+      </div>
+      <div class="ml-rec-badge ml-badge-{{ ml.recommended.colour }}">
+        <span class="ml-badge-label">Recommended for you</span>
+        <span class="ml-badge-plan">{{ ml.recommended.label }}</span>
+        <span class="ml-badge-total">€{{ ml.recommended.total }} total</span>
+        <span class="ml-badge-monthly">€{{ ml.recommended.monthly_required }}/month</span>
+      </div>
+    </div>
+
+    <!-- Three scenario bars -->
+    <div class="ml-scenarios">
+      {% for scenario in ml.all_scenarios %}
+      <div class="ml-scenario {% if scenario.key == ml.recommended.key %}ml-scenario-active{% endif %}">
+        <div class="ml-scenario-header">
+          <span class="ml-scenario-name">{{ scenario.label }}</span>
+          <span class="ml-scenario-total">€{{ scenario.total }}</span>
+          {% if scenario.feasible %}
+            <span class="ml-feasible-badge">✓ Feasible</span>
+          {% else %}
+            <span class="ml-unfeasible-badge">€{{ scenario.shortfall }}/mo shortfall</span>
+          {% endif %}
+        </div>
+        <div class="ml-scenario-bar-wrap">
+          <div class="ml-scenario-bar"
+          style="--bar-w: {{ scenario.pct_covered|default:0|floatformat:0 }}%;"></div>
+        </div>
+        <p class="ml-scenario-desc">{{ scenario.description }}</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Cost breakdown of recommended -->
+    <div class="ml-breakdown">
+      <p class="breakdown-title">{{ ml.recommended.label }} Plan - Cost Breakdown</p>
+      <div class="ml-breakdown-grid">
+        {% for item, cost in ml.recommended.items.items %}
+        <div class="ml-breakdown-item">
+          <span class="ml-breakdown-label">{{ item }}</span>
+          <span class="ml-breakdown-amount">€{{ cost }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+  {% endif %}
+{% endblock %}
