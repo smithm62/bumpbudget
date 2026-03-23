@@ -5,18 +5,32 @@
 
 {% block content %}
 
-<!-- Page header -->
-<div class="comm-page-header">
-  <div>
-    <h2 class="welcome-title">Community</h2>
-    <p class="intro">Ask questions, share tips, and connect with other parents</p>
+<div class="comm-hero">
+  <div class="comm-hero-left">
+    <p class="comm-hero-eyebrow">BumpBudget Community</p>
+    <h1 class="comm-hero-title">Ask, share, <em>connect.</em></h1>
+    <p class="comm-hero-sub">Real questions, real answers - from parents who get it.</p>
   </div>
-  <a href="{% url 'create_post' %}" class="btn btn-primary">+ New post</a>
+  <div class="comm-hero-right">
+    <a href="{% url 'create_post' %}" class="btn comm-hero-btn">+ New post</a>
+    <div class="comm-hero-stats">
+      <div class="comm-hero-stat">
+        <span class="comm-hero-stat-val">{{ posts|length }}</span>
+        <span class="comm-hero-stat-lbl">posts</span>
+      </div>
+      <div class="comm-hero-stat-divider"></div>
+      <div class="comm-hero-stat">
+        <span class="comm-hero-stat-val">{{ categories|length }}</span>
+        <span class="comm-hero-stat-lbl">topics</span>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- Category filter bar -->
+
 <div class="comm-filter-bar">
-  <a href="{% url 'community' %}" class="comm-filter-pill {% if not active_category %}active{% endif %}">
+  <a href="{% url 'community' %}"
+     class="comm-filter-pill {% if not active_category %}active{% endif %}">
     All posts
   </a>
   {% for value, label in categories %}
@@ -27,93 +41,105 @@
   {% endfor %}
 </div>
 
-<!-- Main layout -->
+
 <div class="comm-layout">
 
-  <!-- Feed -->
+  <!-- FEED -->
   <div class="comm-feed">
     {% for post in posts %}
-    <article class="comm-card {% if post.is_pinned %}comm-card-pinned{% endif %}">
+      <article class="comm-card {% if post.is_pinned %}comm-card-pinned{% endif %}">
 
-      <div class="comm-card-top">
-        <div class="comm-meta">
-          <div class="comm-avatar">{{ post.display_name|first|upper }}</div>
-          <div class="comm-meta-text">
-            <span class="comm-author">{{ post.display_name }}</span>
-            {% if post.is_anonymous %}<span class="comm-anon-badge">anon</span>{% endif %}
-            <span class="comm-time">· {{ post.created_at|timesince }} ago</span>
+        <div class="comm-card-top">
+          <div class="comm-meta">
+            <div class="comm-avatar">{{ post.display_name|first|upper }}</div>
+            <div class="comm-meta-text">
+              <span class="comm-author">{{ post.display_name }}</span>
+              {% if post.is_anonymous %}
+                <span class="comm-anon-badge">anon</span>
+              {% endif %}
+              <span class="comm-dot">·</span>
+              <span class="comm-time">{{ post.created_at|timesince }} ago</span>
+            </div>
+          </div>
+
+          <div class="comm-badges">
+            <span class="comm-cat-badge comm-cat-{{ post.category }}">
+              {{ post.get_category_display }}
+            </span>
+            {% if post.is_pinned %}
+              <span class="comm-pin-badge">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
+                </svg>
+                Pinned
+              </span>
+            {% endif %}
           </div>
         </div>
-        <div class="comm-badges">
-          <span class="comm-cat-badge comm-cat-{{ post.category }}">{{ post.get_category_display }}</span>
-          {% if post.is_pinned %}
-            <span class="comm-pin-badge">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
-              Pinned
-            </span>
-          {% endif %}
-        </div>
-      </div>
 
-      <a href="{% url 'post_detail' post.pk %}" class="comm-card-title">{{ post.title }}</a>
-      <p class="comm-card-excerpt">{{ post.body|truncatewords:25 }}</p>
+        <a href="{% url 'post_detail' post.pk %}" class="comm-card-title">{{ post.title }}</a>
+        <p class="comm-card-excerpt">{{ post.body|truncatewords:25 }}</p>
 
-      <div class="comm-card-footer">
-        <div class="comm-stats">
-          <form method="post" action="{% url 'toggle_like' post.pk %}">
-            {% csrf_token %}
-            <button type="submit" class="comm-stat-btn {% if post.pk in liked_ids %}comm-liked{% endif %}">
-              <svg width="13" height="13" viewBox="0 0 24 24"
-                   fill="{% if post.pk in liked_ids %}currentColor{% else %}none{% endif %}"
-                   stroke="currentColor" stroke-width="2.5">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        <div class="comm-card-footer">
+          <div class="comm-stats">
+            <form method="post" action="{% url 'toggle_like' post.pk %}">
+              {% csrf_token %}
+              <button type="submit"
+                      class="comm-stat-btn {% if post.pk in liked_ids %}comm-liked{% endif %}">
+                <svg width="13" height="13" viewBox="0 0 24 24"
+                     fill="{% if post.pk in liked_ids %}currentColor{% else %}none{% endif %}"
+                     stroke="currentColor" stroke-width="2.5">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+                {{ post.num_likes }}
+              </button>
+            </form>
+            <a href="{% url 'post_detail' post.pk %}" class="comm-stat-btn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
               </svg>
-              {{ post.num_likes }}
-            </button>
-          </form>
-          <a href="{% url 'post_detail' post.pk %}" class="comm-stat-btn">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-            </svg>
-            {{ post.num_replies }}
-          </a>
+              {{ post.num_replies }}
+            </a>
+          </div>
+          <a href="{% url 'post_detail' post.pk %}" class="comm-read-link">Read →</a>
         </div>
-        <a href="{% url 'post_detail' post.pk %}" class="comm-read-link">Read →</a>
-      </div>
 
-    </article>
+      </article>
     {% empty %}
-    <div class="comm-empty">
-      <div class="comm-empty-icon">💬</div>
-      <h3>No posts yet{% if active_category %} in this category{% endif %}</h3>
-      <p>Be the first to start a conversation.</p>
-      <a href="{% url 'create_post' %}" class="btn btn-primary">+ New post</a>
-    </div>
+      <div class="comm-empty">
+        <div class="comm-empty-icon">💬</div>
+        <h3>No posts yet{% if active_category %} in this category{% endif %}</h3>
+        <p>Be the first to start a conversation.</p>
+        <a href="{% url 'create_post' %}" class="btn btn-primary">+ New post</a>
+      </div>
     {% endfor %}
   </div>
 
-  <!-- Sidebar -->
+  <!-- SIDEBAR -->
   <aside class="comm-sidebar">
-    <div class="card" style="padding:1.25rem;">
-      <h3 style="margin:0 0 6px;">Start a conversation</h3>
-      <p style="font-size:13px;color:var(--text-3);margin:0 0 14px;">Share your experience, ask a question, or offer advice.</p>
-      <a href="{% url 'create_post' %}" class="btn btn-primary" style="width:100%;">+ New post</a>
+
+    <div class="card comm-sidebar-card">
+      <h3 class="comm-sidebar-heading">Start a conversation</h3>
+      <p class="comm-sidebar-sub">Share your experience, ask a question, or offer advice.</p>
+      <a href="{% url 'create_post' %}" class="btn btn-primary comm-sidebar-btn">+ New post</a>
     </div>
 
-    <div class="card" style="padding:1.25rem;">
-      <p class="card-title" style="margin-bottom:12px;">Browse by topic</p>
+    <div class="card comm-sidebar-card">
+      <p class="card-title">Browse by topic</p>
       <div class="comm-topic-list">
-        <a href="{% url 'community' %}" class="comm-topic {% if not active_category %}active{% endif %}">
+        <a href="{% url 'community' %}"
+           class="comm-topic {% if not active_category %}active{% endif %}">
           <span>All posts</span>
         </a>
         {% for value, label in categories %}
-        <a href="{% url 'community' %}?category={{ value }}"
-           class="comm-topic comm-topic-{{ value }} {% if active_category == value %}active{% endif %}">
-          <span>{{ label }}</span>
-        </a>
+          <a href="{% url 'community' %}?category={{ value }}"
+             class="comm-topic comm-topic-{{ value }} {% if active_category == value %}active{% endif %}">
+            <span>{{ label }}</span>
+          </a>
         {% endfor %}
       </div>
     </div>
+
   </aside>
 
 </div>

@@ -70,11 +70,13 @@
       {% endfor %}
     </div>
   </div>
+  
   {% endif %}
 
   {% endif %}
 
   <!-- ===== GOAL CARDS ===== -->
+  <br>
   <div class="goals-grid">
 
     {% for goal in goals %}
@@ -103,6 +105,7 @@
 
       <!-- Completion ribbon -->
       {% if goal.completed %}
+      <br>
       <div class="goal-done-ribbon">Done ✓</div>
       {% endif %}
 

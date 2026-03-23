@@ -1,67 +1,135 @@
-
 {% extends "base.html" %}
 {% load static %}
 
-{% block content %}
-<!-- ===== ML: Cost Recommendation ===== -->
-  {% if ml %}
-  <h2 class="section-title">Your Personalised Cost Plan</h2>
-  <div class="card ml-card">
+{% block title %}Your Cost Plan — BumpBudget{% endblock %}
 
-    <div class="ml-card-top">
-      <div class="ml-intro">
-        <p class="card-label">Based on your income · CSO Ireland SIA205 2024</p>
-        <p class="ml-decile-tag">Your income places you in the <strong>{{ ml.decile_label }}</strong> of Irish earners</p>
-        <p class="ml-summary">
-          Saving 15% of your income gives you <strong>€{{ ml.savings_capacity }}/month</strong> to put aside.
-          Based on your income and <strong>{{ ml.months_remaining }} months</strong> until your due date,
-          we recommend the <strong class="ml-rec-label">{{ ml.recommended.label }}</strong> pregnancy plan
-          - you would need to save <strong>€{{ ml.recommended.monthly_required }}/month</strong> to cover €{{ ml.recommended.total }} in total costs.
-        </p>
-      </div>
-      <div class="ml-rec-badge ml-badge-{{ ml.recommended.colour }}">
-        <span class="ml-badge-label">Recommended for you</span>
-        <span class="ml-badge-plan">{{ ml.recommended.label }}</span>
-        <span class="ml-badge-total">€{{ ml.recommended.total }} total</span>
-        <span class="ml-badge-monthly">€{{ ml.recommended.monthly_required }}/month</span>
-      </div>
+{% block content %}
+
+{% if ml %}
+
+<div class="ml-hero">
+  <div class="ml-hero-left">
+    <p class="ml-hero-eyebrow">Income-based analysis · CSO Ireland SIA205 2025</p>
+    <h2 class="ml-hero-title">A plan built around<br><em>your income.</em></h2>
+    <p class="ml-hero-sub">
+      Saving 15% of your income gives you
+      <strong class="ml-hero-strong">€{{ ml.savings_capacity }}/month</strong>
+      to put aside — here's what that means for you.
+    </p>
+  </div>
+
+  <div class="ml-hero-right">
+    <img src="{% static 'images/plan/plan-hero-jar.png' %}" alt="" class="ml-hero-img" aria-hidden="true">
+
+    <div class="ml-decile-pill">
+      <span class="ml-decile-pill-label">Your income bracket</span>
+      <span class="ml-decile-pill-value">{{ ml.decile_label }}</span>
+      <span class="ml-decile-pill-sub">of Irish earners</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  MAIN CARD                                              -->
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<div class="ml-card">
+
+  <!-- Summary + recommended badge -->
+  <div class="ml-card-top">
+    <div class="ml-intro">
+      <p class="card-label">Based on your income &amp; {{ ml.months_remaining }} months to due date</p>
+      <p class="ml-decile-tag">Your income places you in the <strong>{{ ml.decile_label }}</strong> of Irish earners</p>
+      <p class="ml-summary">
+        With <strong>{{ ml.months_remaining }} months</strong> remaining and a savings capacity of
+        <strong>€{{ ml.savings_capacity }}/month</strong>, we recommend the
+        <strong class="ml-rec-label">{{ ml.recommended.label }}</strong> plan —
+        requiring <strong>€{{ ml.recommended.monthly_required }}/month</strong> to cover
+        <strong>€{{ ml.recommended.total }}</strong> in total costs.
+      </p>
     </div>
 
-    <!-- Three scenario bars -->
-    <div class="ml-scenarios">
-      {% for scenario in ml.all_scenarios %}
+    <div class="ml-rec-badge ml-badge-{{ ml.recommended.colour }}">
+      <span class="ml-badge-label">Recommended for you</span>
+      <span class="ml-badge-plan">{{ ml.recommended.label }}</span>
+      <span class="ml-badge-total">€{{ ml.recommended.total }}</span>
+      <span class="ml-badge-monthly">€{{ ml.recommended.monthly_required }}/month</span>
+    </div>
+  </div>
+
+  <!-- Scenario cards -->
+  <div class="ml-scenarios">
+    {% for scenario in ml.all_scenarios %}
       <div class="ml-scenario {% if scenario.key == ml.recommended.key %}ml-scenario-active{% endif %}">
-        <div class="ml-scenario-header">
-          <span class="ml-scenario-name">{{ scenario.label }}</span>
-          <span class="ml-scenario-total">€{{ scenario.total }}</span>
+
+        <div class="ml-scenario-icon">
+          {% if forloop.counter == 1 %}
+            <img src="{% static 'images/plan/plan-icon-essential.png' %}" alt="Essential" width="50" height="50">
+            {# plan-icon-essential.png: watercolour seedling/single leaf, sage green, transparent bg, ~100x100px #}
+          {% elif forloop.counter == 2 %}
+            <img src="{% static 'images/plan/plan-icon-standard.png' %}" alt="Standard" width="80" height="80">
+            {# plan-icon-standard.png: watercolour small leafy plant 2-3 leaves, mid green, transparent bg, ~100x100px #}
+          {% else %}
+            <img src="{% static 'images/plan/plan-icon-premium.png' %}" alt="Premium" width="80" height="80">
+            {# plan-icon-premium.png: watercolour gold/amber laurel or ribbon, warm accent tones, transparent bg, ~100x100px #}
+          {% endif %}
+        </div>
+
+        <p class="ml-scenario-name">{{ scenario.label }}</p>
+        <p class="ml-scenario-total">€{{ scenario.total }}</p>
+        <p class="ml-scenario-monthly">~€{{ scenario.monthly_required }}/mo · {{ ml.months_remaining }} months</p>
+
+        <div class="ml-scenario-bar-wrap">
+          <div class="ml-scenario-bar" style="--bar-w: {{ scenario.pct_covered|default:0|floatformat:0 }}%;"></div>
+        </div>
+
+        <p class="ml-scenario-desc">{{ scenario.description }}</p>
+
+        <div class="ml-scenario-footer">
           {% if scenario.feasible %}
             <span class="ml-feasible-badge">✓ Feasible</span>
           {% else %}
             <span class="ml-unfeasible-badge">€{{ scenario.shortfall }}/mo shortfall</span>
           {% endif %}
+          {% if scenario.key == ml.recommended.key %}
+            <span class="ml-recommended-tag">★ Recommended</span>
+          {% endif %}
         </div>
-        <div class="ml-scenario-bar-wrap">
-          <div class="ml-scenario-bar"
-          style="--bar-w: {{ scenario.pct_covered|default:0|floatformat:0 }}%;"></div>
-        </div>
-        <p class="ml-scenario-desc">{{ scenario.description }}</p>
-      </div>
-      {% endfor %}
-    </div>
 
-    <!-- Cost breakdown of recommended -->
-    <div class="ml-breakdown">
-      <p class="breakdown-title">{{ ml.recommended.label }} Plan - Cost Breakdown</p>
-      <div class="ml-breakdown-grid">
-        {% for item, cost in ml.recommended.items.items %}
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Cost breakdown -->
+  <div class="ml-breakdown">
+    <div class="ml-breakdown-header">
+      <p class="breakdown-title">Cost breakdown</p>
+      <p class="breakdown-plan-name">{{ ml.recommended.label }} Plan</p>
+    </div>
+    <div class="ml-breakdown-grid">
+      {% for item, cost in ml.recommended.items.items %}
         <div class="ml-breakdown-item">
           <span class="ml-breakdown-label">{{ item }}</span>
           <span class="ml-breakdown-amount">€{{ cost }}</span>
         </div>
-        {% endfor %}
-      </div>
+      {% endfor %}
     </div>
-
   </div>
-  {% endif %}
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  SOURCE NOTE                                            -->
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<div class="ml-source-note">
+  <span>📊</span>
+  <p>
+    Estimates are based on <strong>CSO Ireland SIA205 2024</strong> household expenditure data,
+    adjusted for your income decile. Individual costs will vary. This plan is a guide — not financial advice.
+  </p>
+</div>
+
+{% endif %}
+
 {% endblock %}

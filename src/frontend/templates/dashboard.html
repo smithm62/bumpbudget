@@ -5,78 +5,7 @@
 {% block title %}Dashboard — BumpBudget{% endblock %}
 
 {% block content %}
-<style>
-  /* ── Warm page background ── */
-  .page-content { background: #faf7f2; }
 
-  /* ── Hero greeting banner ── */
-  .dash-hero {
-    background: linear-gradient(135deg, #2e4a3d 0%, #4a6b5d 60%, #5d8870 100%);
-    border-radius: var(--radius);
-    padding: 2rem 2.25rem;
-    margin-bottom: 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-  .dash-hero .welcome-title {
-    font-family: var(--font-display);
-    font-size: 2rem;
-    font-weight: 400;
-    color: #fff;
-    margin: 0 0 0.3rem;
-    letter-spacing: 0;
-  }
-  .dash-hero .intro { color: rgba(255,255,255,0.72); font-size: 0.9rem; margin: 0; }
-  .dash-hero .due-badge {
-    background: rgba(255,255,255,0.15);
-    color: #fff;
-    border: 1px solid rgba(255,255,255,0.25);
-    backdrop-filter: blur(4px);
-  }
-
-  /* ── Summary cards warmer ── */
-  .summary-grid .card {
-    background: #fff;
-    box-shadow: 0 2px 12px rgba(46,74,61,0.07);
-  }
-  .summary-grid .card h3 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; }
-  .summary-grid .card .amount { font-family: var(--font-display); font-size: 1.7rem; font-weight: 400; margin: 0 0 0.2rem; }
-  .summary-grid .card .note { font-size: 0.78rem; }
-
-  /* ── Section cards warmer ── */
-  .dash-left .card,
-  .dash-right .card {
-    background: #fff;
-    box-shadow: 0 2px 12px rgba(46,74,61,0.06);
-  }
-
-  /* ── Section headers ── */
-  .section-header h3 {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--primary-dark);
-  }
-
-  /* ── Quick actions warmer ── */
-  .quick-actions { display: flex; flex-direction: column; gap: 0.6rem; }
-  .quick-actions .btn,
-  .quick-actions .btn-outline { width: 100%; text-align: center; justify-content: center; }
-
-  /* ── Trimester card ── */
-  .trimester-card { background: linear-gradient(135deg, #eef3f0, #f5f0e8); }
-  .trimester-card h3 { font-size: 0.9rem; color: var(--primary-dark); }
-
-  /* ── Upcoming section warm tint ── */
-  .upcoming.card { background: #fffbf5 !important; border-left: 3px solid var(--amber); }
-
-  /* ── Expense rows ── */
-  .expense-row { padding: 0.65rem 0; }
-  .cost-label { color: var(--text-main); font-weight: 500; }
-  .expense-cat { color: var(--text-light); font-size: 0.8rem; }
-</style>
 
 <div class="dash-hero">
   <div>
@@ -94,13 +23,14 @@
 
   {% if profile.due_date %}
     <div class="due-badge">
-      🌿 Due {{ profile.due_date|date:"j M Y" }}
+      👣 Due {{ profile.due_date|date:"j M Y" }}
       {% if weeks_until_due is not None %}
         · {{ weeks_until_due }}w away
       {% endif %}
     </div>
   {% endif %}
 </div>
+
 
 <div class="summary-grid">
   <div class="card">
@@ -118,7 +48,7 @@
       {% if remaining >= 0 %}
         {{ profile.currency_symbol }}{{ remaining|floatformat:0|intcomma }} remaining
       {% else %}
-        {{ profile.currency_symbol }}{{ remaining|floatformat:0|intcomma }} over budget
+        {{ profile.currency_symbol }}{{ remaining|floatformat:0|intcomma|slice:"1:" }} over budget
       {% endif %}
     </p>
   </div>
@@ -136,16 +66,15 @@
   </div>
 </div>
 
-{% if trimester_segments %}
-  <section class="card trimester-card">
-    <h3>Pregnancy progress · Week {{ pregnancy_week }} of 40</h3>
 
+{% if trimester_segments %}
+  <section class="trimester-card">
+    <h3>Pregnancy progress · Week {{ pregnancy_week }} of 40</h3>
     <div class="tri-bar">
       {% for seg in trimester_segments %}
         <div class="tri-seg tri-{{ seg.state }}"></div>
       {% endfor %}
     </div>
-
     <div class="tri-labels">
       <span>T1 · Wk 1–13</span>
       <span>T2 · Wk 14–27</span>
@@ -154,12 +83,16 @@
   </section>
 {% endif %}
 
+
 <div class="dash-columns">
+
+  <!-- LEFT COLUMN -->
   <div class="dash-left">
 
-{% include "savings.html" %}
+    {% include "savings.html" %}
 
-    <section class="chart-section card">
+    <!-- Spending chart -->
+    <section class="card">
       <div class="section-header">
         <h3>Spending breakdown</h3>
         <a href="{% url 'expense_list' %}" class="section-link">View all →</a>
@@ -176,6 +109,7 @@
       <script id="spending-data" type="application/json">{{ chart_data|safe }}</script>
     </section>
 
+    <!-- Recent expenses -->
     <section class="card">
       <div class="section-header">
         <h3>Recent expenses</h3>
@@ -190,8 +124,7 @@
                 <span class="cost-label">{{ e.description|default:e.get_category_display }}</span>
                 <span class="expense-cat">{{ e.get_category_display }} · {{ e.date|date:"j M" }}</span>
               </div>
-
-              <div style="display: flex; align-items: center; gap: 10px;">
+              <div class="expense-row-right">
                 <span class="cost-amount">{{ profile.currency_symbol }}{{ e.amount|floatformat:2|intcomma }}</span>
                 <a href="{% url 'edit_expense' e.pk %}" class="row-edit-link">edit</a>
               </div>
@@ -199,23 +132,22 @@
           {% endfor %}
         </ul>
       {% else %}
-        <p class="small">
-          No expenses yet.
-          <a href="{% url 'add_expense' %}">Add your first →</a>
-        </p>
+        <p class="small">No expenses yet. <a href="{% url 'add_expense' %}">Add your first →</a></p>
       {% endif %}
     </section>
 
   </div>
 
+  <!-- RIGHT COLUMN -->
   <div class="dash-right">
 
     {% include "weekly_tip.html" %}
     {% include "milestones.html" %}
 
-    <section class="upcoming card">
+    <!-- Upcoming costs -->
+    <section class="card upcoming-card">
       <div class="section-header">
-        <h3 class="section-title">Upcoming costs</h3>
+        <h3>Upcoming costs</h3>
         <a href="{% url 'add_expense' %}" class="section-link">+ Plan →</a>
       </div>
 
@@ -231,28 +163,30 @@
               </span>
               <span class="cost-meta">{{ e.date|date:"j M Y" }}</span>
             </div>
-            <span class="cost-amount">€{{ e.amount|floatformat:2|intcomma }}</span>
+            <span class="cost-amount">{{ profile.currency_symbol }}{{ e.amount|floatformat:2|intcomma }}</span>
           </li>
         {% empty %}
-          <li style="color: var(--text-muted); font-size: 14px;">
+          <li class="upcoming-empty">
             No upcoming costs planned.
-            <a href="{% url 'add_expense' %}" style="color: var(--purple);">Plan one →</a>
+            <a href="{% url 'add_expense' %}">Plan one →</a>
           </li>
         {% endfor %}
       </ul>
     </section>
 
+    <!-- Quick actions -->
     <section class="card">
-      <h3>Quick actions</h3>
+      <h3 class="quick-actions-title">Quick actions</h3>
       <div class="quick-actions">
-        <a href="{% url 'add_expense' %}" class="btn btn-primary">+ Add expense</a>
+        <a href="{% url 'add_expense' %}"      class="btn btn-primary">+ Add expense</a>
         <a href="{% url 'add_savings_goal' %}" class="btn btn-outline">+ New goal</a>
-        <a href="{% url 'plan' %}" class="btn btn-outline">Set Plan</a>
-        <a href="{% url 'profile_setup' %}" class="btn btn-outline">Edit profile</a>
+        <a href="{% url 'plan' %}"             class="btn btn-outline">Set plan</a>
+        <a href="{% url 'profile_setup' %}"    class="btn btn-outline">Edit profile</a>
       </div>
     </section>
 
   </div>
+
 </div>
 
 {% endblock %}

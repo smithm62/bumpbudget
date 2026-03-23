@@ -2,76 +2,73 @@
 {% load static %}
 {% block content %}
 
-<div class="page-content resources-page">
+<div class="resources-page">
 
-  <!-- ── Hero ─────────────────────────────────────────────── -->
+  <!-- Hero -->
   <div class="res-hero">
     <div class="res-hero-text">
       <p class="res-hero-eyebrow">Support &amp; Guidance</p>
-      <h1 class="res-hero-title">Resources</h1>
-      <p class="res-hero-sub">Trusted Irish services, all in one place.</p>
+      <h1 class="res-hero-title">Every answer <em>you need,</em><br>right here.</h1>
+      <p class="res-hero-sub">Trusted Irish services and supports, all in one place.</p>
       <div class="res-hero-pills">
-        <span class="res-pill">🏛 Government</span>
-        <span class="res-pill">🩺 Healthcare</span>
-        <span class="res-pill">💰 Budgeting</span>
-        <span class="res-pill">🧸 Childcare</span>
-        <span class="res-pill">🤝 Support</span>
+        <a href="#gov" class="res-pill">🏛 Government</a>
+        <a href="#health" class="res-pill">🩺 Healthcare</a>
+        <a href="#budget" class="res-pill">💰 Budgeting</a>
+        <a href="#childcare" class="res-pill">🧸 Childcare</a>
+        <a href="#support" class="res-pill">🤝 Support</a>
       </div>
     </div>
-    <img src="{% static 'images/resources.png' %}" alt="" class="res-hero-img">
+    <img src="{% static 'images/resources-hero.png' %}" alt="" class="res-hero-img">
   </div>
 
-  <!-- ── Government & Financial ───────────────────────────── -->
-  <div class="res-section">
+  <!-- Government & Financial -->
+  <div class="res-section" id="gov">
     <div class="res-section-head">
       <div class="res-section-icon-wrap rsw-green">🏛</div>
       <h2>Government &amp; Financial</h2>
     </div>
-    <div class="res-grid">
+    <div class="res-list">
 
       <a href="https://www.citizensinformation.ie" target="_blank" rel="noopener" class="res-card">
-        <div class="res-card-visual rcv-green">
-          <img src="{% static 'images/res/citizens-info.png' %}" class="res-card-img" alt="Citizens Information">
-          <span class="res-ext-chip">↗</span>
+        <div class="res-card-icon rcv-green">
+          <img src="{% static 'images/res/citizens-info.png' %}" alt="">
         </div>
         <div class="res-card-body">
           <p class="res-card-name">Citizens Information</p>
           <p class="res-card-tag">Leave, benefits &amp; family supports</p>
           <p class="res-card-desc">Maternity benefit, parental leave, child benefit, and all family supports in Ireland.</p>
         </div>
-        <div class="res-card-footer">
+        <div class="res-card-right">
           <span class="res-domain">citizensinformation.ie</span>
           <span class="res-arrow">→</span>
         </div>
       </a>
 
       <a href="https://www.gov.ie/en/organisation/department-of-social-protection/" target="_blank" rel="noopener" class="res-card">
-        <div class="res-card-visual rcv-sage">
-          <img src="{% static 'images/res/dsp.png' %}" class="res-card-img" alt="Dept. of Social Protection">
-          <span class="res-ext-chip">↗</span>
+        <div class="res-card-icon rcv-sage">
+          <img src="{% static 'images/res/dsp.png' %}" alt="">
         </div>
         <div class="res-card-body">
           <p class="res-card-name">Dept. of Social Protection</p>
           <p class="res-card-tag">Maternity &amp; paternity benefit</p>
           <p class="res-card-desc">Income supports and benefit payments during pregnancy and parental leave.</p>
         </div>
-        <div class="res-card-footer">
+        <div class="res-card-right">
           <span class="res-domain">gov.ie</span>
           <span class="res-arrow">→</span>
         </div>
       </a>
 
       <a href="https://www.revenue.ie" target="_blank" rel="noopener" class="res-card">
-        <div class="res-card-visual rcv-cream">
-          <img src="{% static 'images/res/revenue.png' %}" class="res-card-img" alt="Revenue">
-          <span class="res-ext-chip">↗</span>
+        <div class="res-card-icon rcv-cream">
+          <img src="{% static 'images/res/revenue.png' %}" alt="">
         </div>
         <div class="res-card-body">
           <p class="res-card-name">Revenue</p>
           <p class="res-card-tag">Tax credits &amp; PAYE</p>
           <p class="res-card-desc">How having a child affects your tax credits and PAYE situation in Ireland.</p>
         </div>
-        <div class="res-card-footer">
+        <div class="res-card-right">
           <span class="res-domain">revenue.ie</span>
           <span class="res-arrow">→</span>
         </div>
@@ -80,41 +77,39 @@
     </div>
   </div>
 
-  <!-- ── Healthcare ───────────────────────────────────────── -->
-  <div class="res-section">
+  <!-- Healthcare -->
+  <div class="res-section" id="health">
     <div class="res-section-head">
       <div class="res-section-icon-wrap rsw-sage">🩺</div>
       <h2>Healthcare &amp; Pregnancy</h2>
     </div>
-    <div class="res-grid">
+    <div class="res-list">
 
       <a href="https://www.hse.ie" target="_blank" rel="noopener" class="res-card">
-        <div class="res-card-visual rcv-green">
-          <img src="{% static 'images/res/hse.png' %}" class="res-card-img" alt="HSE">
-          <span class="res-ext-chip">↗</span>
+        <div class="res-card-icon rcv-green">
+          <img src="{% static 'images/res/hse.png' %}" alt="">
         </div>
         <div class="res-card-body">
           <p class="res-card-name">Health Service Executive</p>
           <p class="res-card-tag">Maternity &amp; antenatal care</p>
           <p class="res-card-desc">Maternity services, antenatal care, and public hospital services across Ireland.</p>
         </div>
-        <div class="res-card-footer">
+        <div class="res-card-right">
           <span class="res-domain">hse.ie</span>
           <span class="res-arrow">→</span>
         </div>
       </a>
 
       <a href="https://www.mychild.ie" target="_blank" rel="noopener" class="res-card">
-        <div class="res-card-visual rcv-sage">
-          <img src="{% static 'images/res/mychild.png' %}" class="res-card-img" alt="MyChild.ie">
-          <span class="res-ext-chip">↗</span>
+        <div class="res-card-icon rcv-sage">
+          <img src="{% static 'images/res/mychild.png' %}" alt="">
         </div>
         <div class="res-card-body">
           <p class="res-card-name">MyChild.ie</p>
           <p class="res-card-tag">Pregnancy stages &amp; early childhood</p>
           <p class="res-card-desc">HSE-supported info on pregnancy stages, birth, and early childhood health.</p>
         </div>
-        <div class="res-card-footer">
+        <div class="res-card-right">
           <span class="res-domain">mychild.ie</span>
           <span class="res-arrow">→</span>
         </div>
@@ -123,41 +118,39 @@
     </div>
   </div>
 
-  <!-- ── Budgeting ─────────────────────────────────────────── -->
-  <div class="res-section">
+  <!-- Budgeting -->
+  <div class="res-section" id="budget">
     <div class="res-section-head">
       <div class="res-section-icon-wrap rsw-cream">💰</div>
       <h2>Budgeting &amp; Financial Planning</h2>
     </div>
-    <div class="res-grid">
+    <div class="res-list">
 
       <a href="https://www.mabs.ie" target="_blank" rel="noopener" class="res-card">
-        <div class="res-card-visual rcv-cream">
-          <img src="{% static 'images/res/mabs.png' %}" class="res-card-img" alt="MABS">
-          <span class="res-ext-chip">↗</span>
+        <div class="res-card-icon rcv-cream">
+          <img src="{% static 'images/res/mabs.png' %}" alt="">
         </div>
         <div class="res-card-body">
           <p class="res-card-name">MABS</p>
           <p class="res-card-tag">Free budgeting advice</p>
           <p class="res-card-desc">Confidential money advice for individuals and families — free of charge.</p>
         </div>
-        <div class="res-card-footer">
+        <div class="res-card-right">
           <span class="res-domain">mabs.ie</span>
           <span class="res-arrow">→</span>
         </div>
       </a>
 
       <a href="https://www.ccpc.ie" target="_blank" rel="noopener" class="res-card">
-        <div class="res-card-visual rcv-green">
-          <img src="{% static 'images/res/ccpc.png' %}" class="res-card-img" alt="CCPC">
-          <span class="res-ext-chip">↗</span>
+        <div class="res-card-icon rcv-green">
+          <img src="{% static 'images/res/ccpc.png' %}" alt="">
         </div>
         <div class="res-card-body">
           <p class="res-card-name">CCPC</p>
           <p class="res-card-tag">Savings, loans &amp; decisions</p>
           <p class="res-card-desc">Independent guidance on money management, savings, loans, and financial decisions.</p>
         </div>
-        <div class="res-card-footer">
+        <div class="res-card-right">
           <span class="res-domain">ccpc.ie</span>
           <span class="res-arrow">→</span>
         </div>
@@ -166,41 +159,39 @@
     </div>
   </div>
 
-  <!-- ── Childcare ─────────────────────────────────────────── -->
-  <div class="res-section">
+  <!-- Childcare -->
+  <div class="res-section" id="childcare">
     <div class="res-section-head">
       <div class="res-section-icon-wrap rsw-grey">🧸</div>
       <h2>Childcare &amp; Family Costs</h2>
     </div>
-    <div class="res-grid">
+    <div class="res-list">
 
       <a href="https://www.ncs.gov.ie" target="_blank" rel="noopener" class="res-card">
-        <div class="res-card-visual rcv-sage">
-          <img src="{% static 'images/res/ncs.png' %}" class="res-card-img" alt="National Childcare Scheme">
-          <span class="res-ext-chip">↗</span>
+        <div class="res-card-icon rcv-sage">
+          <img src="{% static 'images/res/ncs.png' %}" alt="">
         </div>
         <div class="res-card-body">
           <p class="res-card-name">National Childcare Scheme</p>
           <p class="res-card-tag">Childcare subsidies</p>
           <p class="res-card-desc">Financial support and subsidies for childcare available to families in Ireland.</p>
         </div>
-        <div class="res-card-footer">
+        <div class="res-card-right">
           <span class="res-domain">ncs.gov.ie</span>
           <span class="res-arrow">→</span>
         </div>
       </a>
 
       <a href="https://www.earlychildhoodireland.ie" target="_blank" rel="noopener" class="res-card">
-        <div class="res-card-visual rcv-cream">
-          <img src="{% static 'images/res/eci.png' %}" class="res-card-img" alt="Early Childhood Ireland">
-          <span class="res-ext-chip">↗</span>
+        <div class="res-card-icon rcv-cream">
+          <img src="{% static 'images/res/eci.png' %}" alt="">
         </div>
         <div class="res-card-body">
           <p class="res-card-name">Early Childhood Ireland</p>
           <p class="res-card-tag">Early years care &amp; education</p>
           <p class="res-card-desc">Resources on early years care and education options across Ireland.</p>
         </div>
-        <div class="res-card-footer">
+        <div class="res-card-right">
           <span class="res-domain">earlychildhoodireland.ie</span>
           <span class="res-arrow">→</span>
         </div>
@@ -209,41 +200,39 @@
     </div>
   </div>
 
-  <!-- ── Support & Community ───────────────────────────────── -->
-  <div class="res-section">
+  <!-- Support & Community -->
+  <div class="res-section" id="support">
     <div class="res-section-head">
       <div class="res-section-icon-wrap rsw-green">🤝</div>
       <h2>Support &amp; Community</h2>
     </div>
-    <div class="res-grid">
+    <div class="res-list">
 
       <a href="https://www.parentline.ie" target="_blank" rel="noopener" class="res-card">
-        <div class="res-card-visual rcv-green">
-          <img src="{% static 'images/res/parentline.png' %}" class="res-card-img" alt="Parentline">
-          <span class="res-ext-chip">↗</span>
+        <div class="res-card-icon rcv-green">
+          <img src="{% static 'images/res/parentline.png' %}" alt="">
         </div>
         <div class="res-card-body">
           <p class="res-card-name">Parentline</p>
           <p class="res-card-tag">Confidential listening service</p>
           <p class="res-card-desc">Confidential support and a listening ear for parents across Ireland.</p>
         </div>
-        <div class="res-card-footer">
+        <div class="res-card-right">
           <span class="res-domain">parentline.ie</span>
           <span class="res-arrow">→</span>
         </div>
       </a>
 
       <a href="https://www.ifpa.ie" target="_blank" rel="noopener" class="res-card">
-        <div class="res-card-visual rcv-sage">
-          <img src="{% static 'images/res/ifpa.png' %}" class="res-card-img" alt="IFPA">
-          <span class="res-ext-chip">↗</span>
+        <div class="res-card-icon rcv-sage">
+          <img src="{% static 'images/res/ifpa.png' %}" alt="">
         </div>
         <div class="res-card-body">
           <p class="res-card-name">Irish Family Planning Association</p>
           <p class="res-card-tag">Pregnancy &amp; family planning</p>
           <p class="res-card-desc">Support and education around pregnancy, sexual health, and family planning.</p>
         </div>
-        <div class="res-card-footer">
+        <div class="res-card-right">
           <span class="res-domain">ifpa.ie</span>
           <span class="res-arrow">→</span>
         </div>
@@ -252,12 +241,12 @@
     </div>
   </div>
 
-  <!-- ── Tip strip ─────────────────────────────────────────── -->
+  <!-- Tip strip -->
   <div class="res-tip-strip">
     <span style="font-size:1.1rem;flex-shrink:0;">💡</span>
     <p>Missing a resource? All links open the official website in a new tab. For personalised advice, the <a href="https://www.mabs.ie" target="_blank">MABS helpline</a> is free and available Mon–Fri.</p>
   </div>
 
 </div>
-
+</div> 
 {% endblock %}
