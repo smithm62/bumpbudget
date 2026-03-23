@@ -1,22 +1,111 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block title %}FAQs — BumpBudget{% endblock %}
+
 {% block content %}
-<h2>FAQs</h2>
 
-<div class="card">
-  <h3>Is BumpBudget free?</h3>
-  <p>Yes. This version is built as an academic project and is free to use.</p>
+
+<div class="res-hero">
+  <div>
+    <p class="res-hero-eyebrow">Help &amp; Support</p>
+    <h1 class="res-hero-title">Frequently asked <em>questions.</em></h1>
+    <p class="res-hero-sub">Everything you need to know about BumpBudget.</p>
+  </div>
 </div>
 
-<div class="card">
-  <h3>How does forecasting work?</h3>
-  <p>
-    Forecasting is based on your profile details (due date, income, leave dates) and
-    typical cost patterns. Predictions are guidance, not financial advice.
-  </p>
+
+<div class="faq-list">
+
+  <div class="faq-item">
+    <div class="faq-question">
+      <span class="faq-icon">?</span>
+      <h3>Is BumpBudget free?</h3>
+    </div>
+    <p class="faq-answer">Yes. This version is built as an academic project and is free to use.</p>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question">
+      <span class="faq-icon">?</span>
+      <h3>How does forecasting work?</h3>
+    </div>
+    <p class="faq-answer">
+      Forecasting is based on your profile details - due date, income, and leave dates -
+      alongside typical cost patterns from CSO Ireland data. Predictions are guidance, not financial advice.
+    </p>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question">
+      <span class="faq-icon">?</span>
+      <h3>Can I change my details later?</h3>
+    </div>
+    <p class="faq-answer">Yes. You can update your profile at any time from the sidebar to refresh your forecasts and plan.</p>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question">
+      <span class="faq-icon">?</span>
+      <h3>Is my data private?</h3>
+    </div>
+    <p class="faq-answer">Your data is stored securely and is only visible to you. We do not share your information with third parties. As this is an academic project, we recommend not entering sensitive personal information.</p>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question">
+      <span class="faq-icon">?</span>
+      <h3>How is my income decile calculated?</h3>
+    </div>
+    <p class="faq-answer">We use CSO Ireland SIA205 2025 household income data to place your income within the distribution of Irish earners. This helps us tailor your cost plan to what's realistic for your situation.</p>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question">
+      <span class="faq-icon">?</span>
+      <h3>What is the maternity leave tracker?</h3>
+    </div>
+    <p class="faq-answer">The maternity leave tracker helps you map out your leave phases - full pay, half pay, statutory, and unpaid - and shows you how your income will change month by month so you can plan ahead with confidence.</p>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question">
+      <span class="faq-icon">?</span>
+      <h3>What are savings goals?</h3>
+    </div>
+    <p class="faq-answer">Savings goals let you set targets for specific purchases or funds - like a pram, a hospital bag, or an emergency buffer. You can log contributions over time and track your progress toward each goal.</p>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question">
+      <span class="faq-icon">?</span>
+      <h3>Can I use BumpBudget if I'm planning a pregnancy?</h3>
+    </div>
+    <p class="faq-answer">Absolutely. BumpBudget has a planning stage designed for people who are preparing for pregnancy. You can set up a budget, explore cost plans, and start saving goals before you're expecting.</p>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question">
+      <span class="faq-icon">?</span>
+      <h3>Are the cost estimates accurate?</h3>
+    </div>
+    <p class="faq-answer">Cost estimates are based on real Irish household expenditure data and are tailored to your income level. They are intended as realistic guidance rather than exact figures - every family's situation is different.</p>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question">
+      <span class="faq-icon">?</span>
+      <h3>How do I delete my account?</h3>
+    </div>
+    <p class="faq-answer">You can delete your account from your profile settings. This will permanently remove all your data including expenses, goals, and leave details. This action cannot be undone.</p>
+  </div>
+
 </div>
 
-<div class="card">
-  <h3>Can I change my details later?</h3>
-  <p>Yes. You can update your profile at any time to refresh your forecasts.</p>
+
+<div class="faq-cta">
+  <p>Still have a question?</p>
+  <a href="{% url 'contact' %}" class="btn btn-primary">Contact us</a>
 </div>
+
 {% endblock %}

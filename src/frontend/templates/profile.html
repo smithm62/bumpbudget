@@ -6,20 +6,17 @@
 
 {% block content %}
 
+
 <div class="profile-hero">
   <div class="profile-hero-left">
     <div class="profile-avatar">
       {{ profile.first_name|first|upper }}{{ user.username|first|upper }}
     </div>
-
     <div>
       <div class="profile-name">
         {{ profile.first_name|default:user.username }}
-        <span class="profile-stage-badge">
-          {{ profile.get_life_stage_display|truncatewords:1 }}
-        </span>
+        <span class="profile-stage-badge">{{ profile.get_life_stage_display|truncatewords:1 }}</span>
       </div>
-
       <div class="profile-meta">
         Member since {{ user.date_joined|date:"M Y" }} · {{ profile.get_currency_display }}
       </div>
@@ -34,7 +31,10 @@
   {% endif %}
 </div>
 
+
 <div class="profile-grid">
+
+  <!-- LEFT COLUMN -->
   <div class="profile-col">
 
     <div class="card profile-card">
@@ -44,17 +44,14 @@
         <span class="profile-label">First name</span>
         <span class="profile-value">{{ profile.first_name|default:"—" }}</span>
       </div>
-
       <div class="profile-row">
         <span class="profile-label">Username</span>
         <span class="profile-value">{{ user.username }}</span>
       </div>
-
       <div class="profile-row">
         <span class="profile-label">Email</span>
         <span class="profile-value">{{ user.email|default:"—" }}</span>
       </div>
-
       <div class="profile-row">
         <span class="profile-label">Currency</span>
         <span class="profile-value">{{ profile.get_currency_display }}</span>
@@ -74,7 +71,6 @@
           <span class="profile-label">Due date</span>
           <span class="profile-value">{{ profile.due_date|date:"j M Y" }}</span>
         </div>
-
         <div class="profile-row">
           <span class="profile-label">Current week</span>
           <span class="profile-value">
@@ -82,7 +78,6 @@
             <span class="profile-trimester-badge">T{{ trimester }}</span>
           </span>
         </div>
-
         <div class="profile-row">
           <span class="profile-label">Weeks remaining</span>
           <span class="profile-value">{{ weeks_until_due }} weeks</span>
@@ -128,12 +123,13 @@
       </div>
     {% endif %}
 
-    <a href="{% url 'profile_setup' %}" class="btn btn-primary" style="display: inline-block;">
+    <a href="{% url 'profile_setup' %}" class="btn btn-primary profile-edit-btn">
       Edit profile →
     </a>
 
   </div>
 
+  <!-- RIGHT COLUMN -->
   <div class="profile-col">
 
     <div class="card profile-card">
@@ -153,7 +149,6 @@
             {{ profile.currency_symbol }}{{ profile.partner_monthly_income|floatformat:0|intcomma }}
           </span>
         </div>
-
         <div class="profile-row">
           <span class="profile-label">Combined monthly</span>
           <span class="profile-value profile-value-highlight">
@@ -163,7 +158,7 @@
       {% endif %}
     </div>
 
-<div class="card profile-card">
+    <div class="card profile-card">
       <div class="profile-section-title">Account at a glance</div>
 
       <div class="profile-stats-grid">
@@ -171,19 +166,16 @@
           <div class="profile-stat-label">Expenses logged</div>
           <div class="profile-stat-val">{{ expense_count }}</div>
         </div>
-
         <div class="profile-stat">
           <div class="profile-stat-label">Savings goals</div>
           <div class="profile-stat-val">{{ goals_count }}</div>
         </div>
-
         <div class="profile-stat">
           <div class="profile-stat-label">Total saved</div>
           <div class="profile-stat-val profile-stat-green">
             {{ profile.currency_symbol }}{{ total_saved|floatformat:0|intcomma }}
           </div>
         </div>
-
         <div class="profile-stat">
           <div class="profile-stat-label">Planned ahead</div>
           <div class="profile-stat-val">
@@ -196,16 +188,14 @@
   </div>
 </div>
 
-<div class="profile-danger-zone">
-  <div class="profile-section-title" style="color: #a32d2d; border-color: #f7c1c1;">
-    Account
-  </div>
 
-  <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+<div class="profile-danger-zone">
+  <div class="profile-danger-title">Account</div>
+  <p class="profile-danger-text">
     Deleting your account is permanent and removes all your expenses, goals, and profile data.
   </p>
-
-  <button class="btn btn-danger" onclick="return confirm('Are you sure? This cannot be undone.')">
+  <button class="btn btn-danger"
+          onclick="return confirm('Are you sure? This cannot be undone.')">
     Delete account
   </button>
 </div>

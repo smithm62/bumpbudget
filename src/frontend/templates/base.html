@@ -57,9 +57,12 @@
           <span class="popup-icon">✉</span> Contact
         </a>
         <div class="profile-popup-divider"></div>
-        <a href="/logout/" class="profile-popup-item profile-popup-logout">
-          <span class="popup-icon">→</span> Log Out
-        </a>
+        <form method="post" action="/logout/" style="margin:0">
+          {% csrf_token %}
+          <button type="submit" class="profile-popup-item profile-popup-logout" style="background:none;border:none;width:100%;text-align:left;cursor:pointer;padding:0">
+            <span class="popup-icon">→</span> Log Out
+          </button>
+        </form>
       </div>
     </div>
     {% endif %}
