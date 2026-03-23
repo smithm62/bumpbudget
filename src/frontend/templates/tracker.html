@@ -3,8 +3,6 @@
 
 {% block content %}
 
-<div class="page-content">
-
   <!-- Page Heading -->
   <div class="page-heading">
     <h1>Maternity Leave Tracker</h1>
@@ -15,10 +13,17 @@
     {% endif %}
   </div>
 
-  {% if not profile.maternity_leave_start %}
+  {% if not profile.maternity_leave_start or not profile.maternity_leave_end %}
   <div class="card tracker-empty-card">
     <p class="tracker-empty-title">Set your maternity leave dates to get started</p>
-    <p class="tracker-hint">Add your leave start, end dates, and employer package in your profile.</p>
+    <p class="tracker-hint">Add your leave start and end dates in your profile to see your full breakdown.</p>
+    <a href="/profile-setup/" class="btn" style="margin-top:1.25rem; display:inline-block;">Update Profile</a>
+  </div>
+
+  {% elif not profile.monthly_income %}
+  <div class="card tracker-empty-card">
+    <p class="tracker-empty-title">Add your income to see accurate figures</p>
+    <p class="tracker-hint">Your monthly income is needed to calculate pay phases and income loss during leave.</p>
     <a href="/profile-setup/" class="btn" style="margin-top:1.25rem; display:inline-block;">Update Profile</a>
   </div>
 
@@ -255,7 +260,5 @@
   </div>
 
   {% endif %}
-
-</div>
 
 {% endblock %}

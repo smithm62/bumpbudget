@@ -38,4 +38,8 @@ urlpatterns = [
     path("community/reply/<int:pk>/edit/", views.edit_reply, name="edit_reply"),
     path("community/reply/<int:pk>/delete/", views.delete_reply, name="delete_reply"),
     path("community/reply/<int:pk>/remove/", views.remove_reply, name="remove_reply"),
+    # Staff
+    path("staff/", views.staff_dashboard, name="staff_dashboard"),
+    path("staff/user/<int:user_id>/toggle-role/", views.staff_toggle_role, name="staff_toggle_role"),
+    path("staff/user/<int:user_id>/delete/", views.staff_delete_user, name="staff_delete_user"),
 ]

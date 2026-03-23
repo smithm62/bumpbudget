@@ -30,6 +30,9 @@
       <a href="/goals/"      class="{% if request.resolver_match.url_name == 'goals' %}active{% endif %}">Goals</a>
       <a href="/resources/"  class="{% if request.resolver_match.url_name == 'resources' %}active{% endif %}">Resources</a>
       <a href="/community/"  class="{% if request.resolver_match.url_name == 'community' %}active{% endif %}">Community</a>
+      {% if user.is_staff %}
+      <a href="/staff/"      class="{% if request.resolver_match.url_name == 'staff_dashboard' %}active{% endif %}">Staff</a>
+      {% endif %}
     </nav>
 
     {% if user.is_authenticated %}

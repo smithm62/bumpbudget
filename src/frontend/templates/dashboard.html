@@ -5,17 +5,84 @@
 {% block title %}Dashboard — BumpBudget{% endblock %}
 
 {% block content %}
+<style>
+  /* ── Warm page background ── */
+  .page-content { background: #faf7f2; }
 
-<div class="dashboard-header">
+  /* ── Hero greeting banner ── */
+  .dash-hero {
+    background: linear-gradient(135deg, #2e4a3d 0%, #4a6b5d 60%, #5d8870 100%);
+    border-radius: var(--radius);
+    padding: 2rem 2.25rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .dash-hero .welcome-title {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 400;
+    color: #fff;
+    margin: 0 0 0.3rem;
+    letter-spacing: 0;
+  }
+  .dash-hero .intro { color: rgba(255,255,255,0.72); font-size: 0.9rem; margin: 0; }
+  .dash-hero .due-badge {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.25);
+    backdrop-filter: blur(4px);
+  }
+
+  /* ── Summary cards warmer ── */
+  .summary-grid .card {
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(46,74,61,0.07);
+  }
+  .summary-grid .card h3 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-light); font-weight: 600; margin-bottom: 0.5rem; }
+  .summary-grid .card .amount { font-family: var(--font-display); font-size: 1.7rem; font-weight: 400; margin: 0 0 0.2rem; }
+  .summary-grid .card .note { font-size: 0.78rem; }
+
+  /* ── Section cards warmer ── */
+  .dash-left .card,
+  .dash-right .card {
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(46,74,61,0.06);
+  }
+
+  /* ── Section headers ── */
+  .section-header h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+  }
+
+  /* ── Quick actions warmer ── */
+  .quick-actions { display: flex; flex-direction: column; gap: 0.6rem; }
+  .quick-actions .btn,
+  .quick-actions .btn-outline { width: 100%; text-align: center; justify-content: center; }
+
+  /* ── Trimester card ── */
+  .trimester-card { background: linear-gradient(135deg, #eef3f0, #f5f0e8); }
+  .trimester-card h3 { font-size: 0.9rem; color: var(--primary-dark); }
+
+  /* ── Upcoming section warm tint ── */
+  .upcoming.card { background: #fffbf5 !important; border-left: 3px solid var(--amber); }
+
+  /* ── Expense rows ── */
+  .expense-row { padding: 0.65rem 0; }
+  .cost-label { color: var(--text-main); font-weight: 500; }
+  .expense-cat { color: var(--text-light); font-size: 0.8rem; }
+</style>
+
+<div class="dash-hero">
   <div>
     <h2 class="welcome-title">
-      {% if profile.first_name %}
-        Hi {{ profile.first_name }}
-      {% else %}
-        Hi {{ user.username }}
-      {% endif %}
+      Welcome back{% if profile.first_name %}, {{ profile.first_name }}{% endif %} 👋
     </h2>
-
     <p class="intro">
       {% if pregnancy_week %}
         Week {{ pregnancy_week }} of 40 · {{ profile.get_life_stage_display }}
@@ -27,7 +94,7 @@
 
   {% if profile.due_date %}
     <div class="due-badge">
-      Due {{ profile.due_date|date:"j M Y" }}
+      🌿 Due {{ profile.due_date|date:"j M Y" }}
       {% if weeks_until_due is not None %}
         · {{ weeks_until_due }}w away
       {% endif %}
@@ -98,7 +165,7 @@
         <a href="{% url 'expense_list' %}" class="section-link">View all →</a>
       </div>
 
-      {% if category_data %}
+      {% if chart_categories %}
         <div class="chart-container">
           <canvas id="spendingChart"></canvas>
         </div>

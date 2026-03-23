@@ -223,11 +223,30 @@ def dashboard(request):
         t=Coalesce(Sum("saved_amount"), Decimal("0.00"), output_field=DecimalField())
     ).get("t")
 
-    # Category breakdown
+    # Category breakdown (actual spending only — used for budget tracker)
     category_data = _category_budget_data(request.user, month_start)
-    chart_data    = json.dumps({
-        "labels": [c["label"]  for c in category_data],
-        "values": [float(c["actual"]) for c in category_data],
+
+    # Chart: all expenses by category (actual + upcoming)
+    cat_labels = dict(Expense.Category.choices)
+    chart_qs = (
+        Expense.objects
+        .filter(user=request.user)
+        .values("category")
+        .annotate(total=Coalesce(Sum("amount"), Decimal("0.00"), output_field=DecimalField()))
+    )
+    chart_categories = sorted(
+        [
+            {"label": cat_labels.get(row["category"], row["category"].title()),
+             "actual": row["total"]}
+            for row in chart_qs
+            if row["total"] > 0
+        ],
+        key=lambda x: x["actual"],
+        reverse=True,
+    )
+    chart_data = json.dumps({
+        "labels": [c["label"]  for c in chart_categories],
+        "values": [float(c["actual"]) for c in chart_categories],
     })
 
     # Upcoming / milestone / recent expenses
@@ -300,6 +319,7 @@ def dashboard(request):
         "total_saved":     total_saved,
         # categories
         "category_data":   category_data,
+        "chart_categories": chart_categories,
         "chart_data":      chart_data,
         # expenses
         "upcoming_expenses":   upcoming_expenses,
@@ -1000,3 +1020,61 @@ def remove_reply(request, pk):
         reply.save()
         messages.success(request, "Reply removed.")
     return redirect("post_detail", pk=reply.post.pk)
+
+
+# ---------------------------------------------------------------------------
+# Staff dashboard
+# ---------------------------------------------------------------------------
+
+@login_required
+def staff_dashboard(request):
+    if not request.user.is_staff:
+        return redirect("dashboard")
+
+    from django.contrib.auth.models import User as AuthUser
+    users = AuthUser.objects.select_related("userprofile").order_by("date_joined")
+    posts = Post.objects.select_related("author").order_by("-created_at")
+    total_users   = users.count()
+    total_posts   = posts.count()
+    removed_posts = posts.filter(is_removed=True).count()
+    pinned_posts  = posts.filter(is_pinned=True, is_removed=False).count()
+
+    return render(request, "staff_dashboard.html", {
+        "users":         users,
+        "posts":         posts,
+        "total_users":   total_users,
+        "total_posts":   total_posts,
+        "removed_posts": removed_posts,
+        "pinned_posts":  pinned_posts,
+    })
+
+
+@login_required
+def staff_toggle_role(request, user_id):
+    if not request.user.is_staff or request.method != "POST":
+        return redirect("staff_dashboard")
+    from django.contrib.auth.models import User as AuthUser
+    target = get_object_or_404(AuthUser, pk=user_id)
+    if target == request.user:
+        messages.error(request, "You cannot change your own role.")
+        return redirect("staff_dashboard")
+    target.is_staff = not target.is_staff
+    target.save()
+    role = "Staff" if target.is_staff else "User"
+    messages.success(request, f"{target.username} is now {role}.")
+    return redirect("staff_dashboard")
+
+
+@login_required
+def staff_delete_user(request, user_id):
+    if not request.user.is_staff or request.method != "POST":
+        return redirect("staff_dashboard")
+    from django.contrib.auth.models import User as AuthUser
+    target = get_object_or_404(AuthUser, pk=user_id)
+    if target == request.user:
+        messages.error(request, "You cannot delete your own account here.")
+        return redirect("staff_dashboard")
+    username = target.username
+    target.delete()
+    messages.success(request, f"User '{username}' has been deleted.")
+    return redirect("staff_dashboard")

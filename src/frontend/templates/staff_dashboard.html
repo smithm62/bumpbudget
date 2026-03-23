@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="dashboard-header">
+  <div>
+    <h2 class="welcome-title">Staff Dashboard</h2>
+    <p class="intro">Site management &amp; community moderation</p>
+  </div>
+</div>
+
+<!-- ── Stats ── -->
+<div class="summary-grid">
+  <div class="card">
+    <h3>Total Users</h3>
+    <p class="amount">{{ total_users }}</p>
+  </div>
+  <div class="card">
+    <h3>Total Posts</h3>
+    <p class="amount">{{ total_posts }}</p>
+  </div>
+  <div class="card">
+    <h3>Removed Posts</h3>
+    <p class="amount {% if removed_posts %}negative{% endif %}">{{ removed_posts }}</p>
+  </div>
+  <div class="card">
+    <h3>Pinned Posts</h3>
+    <p class="amount positive">{{ pinned_posts }}</p>
+  </div>
+</div>
+
+<!-- ── User Management ── -->
+<div class="section-header" style="margin-top:2rem;">
+  <h3>User Management</h3>
+</div>
+
+<div class="card" style="overflow-x:auto; padding:0;">
+  <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+    <thead>
+      <tr style="background:var(--primary-soft); text-align:left;">
+        <th style="padding:0.75rem 1rem;">Username</th>
+        <th style="padding:0.75rem 1rem;">Email</th>
+        <th style="padding:0.75rem 1rem;">Life Stage</th>
+        <th style="padding:0.75rem 1rem;">Joined</th>
+        <th style="padding:0.75rem 1rem;">Role</th>
+        <th style="padding:0.75rem 1rem;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+      <tr style="border-top:1px solid var(--border);">
+        <td style="padding:0.65rem 1rem;">{{ u.username }}</td>
+        <td style="padding:0.65rem 1rem;">{{ u.email }}</td>
+        <td style="padding:0.65rem 1rem;">
+          {% if u.userprofile %}
+            {{ u.userprofile.get_life_stage_display }}
+          {% else %}
+            <span style="color:var(--text-light);">—</span>
+          {% endif %}
+        </td>
+        <td style="padding:0.65rem 1rem;">{{ u.date_joined|date:"d M Y" }}</td>
+        <td style="padding:0.65rem 1rem;">
+          {% if u.is_staff %}
+            <span style="background:var(--primary); color:#fff; padding:2px 8px; border-radius:99px; font-size:0.78rem;">Staff</span>
+          {% else %}
+            <span style="color:var(--text-light); font-size:0.85rem;">User</span>
+          {% endif %}
+        </td>
+        <td style="padding:0.65rem 1rem;">
+          {% if u != request.user %}
+            <form method="post" action="{% url 'staff_toggle_role' u.pk %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline" style="padding:3px 10px; font-size:0.8rem;">
+                {% if u.is_staff %}Make User{% else %}Make Staff{% endif %}
+              </button>
+            </form>
+            <form method="post" action="{% url 'staff_delete_user' u.pk %}" style="display:inline; margin-left:4px;"
+                  onsubmit="return confirm('Delete {{ u.username }}? This cannot be undone.');">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger" style="padding:3px 10px; font-size:0.8rem;">Delete</button>
+            </form>
+          {% else %}
+            <span style="color:var(--text-light); font-size:0.8rem;">You</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" style="padding:1rem; color:var(--text-light);">No users found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- ── Community Moderation ── -->
+<div class="section-header" style="margin-top:2rem;">
+  <h3>Community Posts</h3>
+</div>
+
+<div class="card" style="overflow-x:auto; padding:0;">
+  <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+    <thead>
+      <tr style="background:var(--primary-soft); text-align:left;">
+        <th style="padding:0.75rem 1rem;">Title</th>
+        <th style="padding:0.75rem 1rem;">Author</th>
+        <th style="padding:0.75rem 1rem;">Date</th>
+        <th style="padding:0.75rem 1rem;">Status</th>
+        <th style="padding:0.75rem 1rem;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for post in posts %}
+      <tr style="border-top:1px solid var(--border); {% if post.is_removed %}opacity:0.5;{% endif %}">
+        <td style="padding:0.65rem 1rem;">
+          {% if not post.is_removed %}
+            <a href="{% url 'post_detail' post.pk %}">{{ post.title|truncatechars:50 }}</a>
+          {% else %}
+            <span style="color:var(--text-light);">{{ post.title|truncatechars:50 }}</span>
+          {% endif %}
+        </td>
+        <td style="padding:0.65rem 1rem;">
+          {% if post.anonymous %}
+            <span style="color:var(--text-light);">Anonymous</span>
+          {% else %}
+            {{ post.author.username }}
+          {% endif %}
+        </td>
+        <td style="padding:0.65rem 1rem;">{{ post.created_at|date:"d M Y" }}</td>
+        <td style="padding:0.65rem 1rem;">
+          {% if post.is_removed %}
+            <span style="background:var(--coral); color:#fff; padding:2px 8px; border-radius:99px; font-size:0.78rem;">Removed</span>
+          {% elif post.is_pinned %}
+            <span style="background:var(--teal); color:#fff; padding:2px 8px; border-radius:99px; font-size:0.78rem;">Pinned</span>
+          {% else %}
+            <span style="color:var(--text-light); font-size:0.85rem;">Active</span>
+          {% endif %}
+        </td>
+        <td style="padding:0.65rem 1rem;">
+          {% if not post.is_removed %}
+            <form method="post" action="{% url 'pin_post' post.pk %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline" style="padding:3px 10px; font-size:0.8rem;">
+                {% if post.is_pinned %}Unpin{% else %}Pin{% endif %}
+              </button>
+            </form>
+            <form method="post" action="{% url 'remove_post' post.pk %}" style="display:inline; margin-left:4px;"
+                  onsubmit="return confirm('Remove this post?');">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger" style="padding:3px 10px; font-size:0.8rem;">Remove</button>
+            </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" style="padding:1rem; color:var(--text-light);">No posts yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}
