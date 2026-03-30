@@ -219,9 +219,12 @@ def dashboard(request):
 
     # Savings goals
     savings_goals = SavingsGoal.objects.filter(user=request.user)
-    total_saved   = savings_goals.aggregate(
-        t=Coalesce(Sum("saved_amount"), Decimal("0.00"), output_field=DecimalField())
-    ).get("t")
+    total_saved   = (
+        SavingsEntry.objects
+        .filter(user=request.user)
+        .aggregate(t=Coalesce(Sum("amount"), Decimal("0.00"), output_field=DecimalField()))
+        .get("t")
+    )
 
     # Category breakdown (actual spending only — used for budget tracker)
     category_data = _category_budget_data(request.user, month_start)
@@ -706,12 +709,23 @@ def toggle_goal(request, goal_id):
 @login_required
 def add_savings(request):
     if request.method == "POST":
-        SavingsEntry.objects.create(
-            user=request.user,
-            amount=Decimal(request.POST.get("amount", "0")),
-            note=request.POST.get("note", ""),
-            date=request.POST.get("date"),
-        )
+        amount_str = request.POST.get("amount", "").strip()
+        date_str   = request.POST.get("date", "").strip()
+        try:
+            amount = Decimal(amount_str)
+            if amount <= 0:
+                raise ValueError
+            if not date_str:
+                raise ValueError
+            SavingsEntry.objects.create(
+                user=request.user,
+                amount=amount,
+                note=request.POST.get("note", ""),
+                date=date_str,
+            )
+            messages.success(request, "Savings logged.")
+        except (ValueError, Exception):
+            messages.error(request, "Please enter a valid amount and date.")
     return redirect(request.META.get("HTTP_REFERER", "goals"))
 
 

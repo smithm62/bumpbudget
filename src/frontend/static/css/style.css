@@ -1446,9 +1446,11 @@ select {
 .auth-help { font-size: 0.75rem; color: var(--text-light); margin: 0; line-height: 1.4; }
 .auth-field-error { font-size: 0.78rem; color: #b04040; margin: 0; }
 .auth-btn    { width: 100%; padding: 0.8rem; font-size: 0.95rem; margin-top: 0.5rem; border-radius: var(--radius-sm); text-align: center; border: none; cursor: pointer; }
-.auth-switch { text-align: center; margin: 1.25rem 0 0; font-size: 0.85rem; color: var(--text-muted); }
+.auth-switch { text-align: center; margin: 1.25rem 0 0; font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 0.75rem; }
 .auth-switch a { color: var(--primary); font-weight: 600; text-decoration: none; }
 .auth-switch a:hover { color: var(--primary-dark); text-decoration: underline; }
+.auth-signup-btn { display: inline-block; padding: 0.6rem 1.5rem; border: 2px solid var(--primary); border-radius: var(--radius-sm); color: white !important; background: var(--primary); font-weight: 600; font-size: 0.9rem; text-decoration: none !important; transition: background 0.2s, color 0.2s; }
+.auth-signup-btn:hover { background: var(--primary); color: white !important; text-decoration: none !important; }
 
 /* ================= SETUP LAYOUT ================= */
 .form-page { max-width: 1100px; margin: 0 auto; }
@@ -1918,6 +1920,20 @@ select {
 @media (max-width: 700px) {
   .dashboard-quick-grid { grid-template-columns: repeat(2, 1fr); }
 }
+/* ========== FLASH MESSAGES ========== */
+.flash-messages { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.25rem; }
+.flash {
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+.flash-success { background: #edf7f0; color: #2d7a50; border-color: #b6dfc7; }
+.flash-error   { background: var(--coral-light); color: var(--coral); border-color: #f0bfb0; }
+.flash-warning { background: #fff8e6; color: #8a6200; border-color: #f0d98a; }
+.flash-info    { background: #eaf1fb; color: #2a5fa5; border-color: #b3ceef; }
+
 @media (max-width: 600px) {
   .page-content { padding: 1.25rem 1rem 2rem; }
   .footer-top   { grid-template-columns: 1fr 1fr; }

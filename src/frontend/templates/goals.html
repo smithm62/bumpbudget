@@ -29,24 +29,32 @@
   </div>
 
   <!-- ===== SAVINGS SPOTLIGHT ===== -->
-  {% if profile.savings_goal_total %}
   <div class="card goals-savings-spotlight">
     <div class="savings-spotlight-left">
       <p class="card-label">Savings Goal</p>
-      <p class="savings-spotlight-amount">€{{ total_saved }} <span>/ €{{ profile.savings_goal_total }}</span></p>
-      <div class="savings-spotlight-bar-wrap">
-        <div class="savings-spotlight-bar" style="--bar-w: {{ savings_pct }}%;"></div>
-        <span class="savings-spotlight-pct">{{ savings_pct }}%</span>
-      </div>
-      {% if profile.savings_deadline %}
-        <p class="savings-spotlight-deadline">Deadline · {{ profile.savings_deadline|date:"d M Y" }}</p>
+      {% if profile.savings_goal_total %}
+        <p class="savings-spotlight-amount">€{{ total_saved }} <span>/ €{{ profile.savings_goal_total }}</span></p>
+        <div class="savings-spotlight-bar-wrap">
+          <div class="savings-spotlight-bar" style="--bar-w: {{ savings_pct }}%;"></div>
+          <span class="savings-spotlight-pct">{{ savings_pct }}%</span>
+        </div>
+        {% if profile.savings_deadline %}
+          <p class="savings-spotlight-deadline">Deadline · {{ profile.savings_deadline|date:"d M Y" }}</p>
+        {% endif %}
+      {% else %}
+        <p class="savings-spotlight-amount">€{{ total_saved }} <span>saved so far</span></p>
+        <p class="savings-spotlight-deadline">
+          <a href="{% url 'profile_setup' %}">Set a savings goal in your profile →</a>
+        </p>
       {% endif %}
     </div>
     <div class="savings-spotlight-right">
+      {% if profile.savings_goal_total %}
       <div class="savings-spotlight-stat">
         <span class="ssl-val">€{{ savings_remaining }}</span>
         <span class="ssl-lbl">Still needed</span>
       </div>
+      {% endif %}
       <form method="post" action="{% url 'add_savings' %}" class="savings-spotlight-form">
         {% csrf_token %}
         <input type="number" name="amount" placeholder="Amount (€)" step="0.01" min="0.01" required>
@@ -70,9 +78,6 @@
       {% endfor %}
     </div>
   </div>
-  
-  {% endif %}
-
   {% endif %}
 
   <!-- ===== GOAL CARDS ===== -->

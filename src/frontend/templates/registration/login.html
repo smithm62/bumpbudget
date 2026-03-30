@@ -1,10 +1,52 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
-<h2>Log in</h2>
 
-<form method="post" class="form">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button class="btn" type="submit">Log in</button>
-</form>
+<div class="auth-page">
+
+  <div class="auth-card">
+
+    <div class="auth-card-header">
+      <img src="{% static 'images/LOGO.png' %}" alt="BumpBudget" class="auth-logo">
+      <h1>Welcome back</h1>
+      <p>Log in to continue your financial journey.</p>
+    </div>
+
+    {% if form.errors %}
+    <div class="auth-error-box">
+      <span class="auth-error-icon">!</span>
+      <div>
+        <p class="auth-error-title">Please fix the following:</p>
+        {% for field, errors in form.errors.items %}
+          {% for error in errors %}
+            <p class="auth-error-item">{{ error }}</p>
+          {% endfor %}
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <form method="post" class="auth-form">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="auth-field">
+        <label for="{{ field.id_for_label }}" class="auth-label">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+          {% for error in field.errors %}
+            <p class="auth-field-error">{{ error }}</p>
+          {% endfor %}
+        {% endif %}
+      </div>
+      {% endfor %}
+
+      <button type="submit" class="btn auth-btn">Log In</button>
+    </form>
+
+    <p class="auth-switch">Don't have an account? <a href="/register/" class="btn auth-signup-btn">Sign Up</a></p>
+
+  </div>
+
+</div>
+
 {% endblock %}

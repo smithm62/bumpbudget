@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if editing %}Edit savings goal{% else %}Add savings goal{% endif %} — BumpBudget{% endblock %}
+
+{% block content %}
+<div class="form-page">
+  <div class="form-page-header">
+    <a href="{% url 'savings_goals' %}" class="back-link">← Savings goals</a>
+    <h2>{% if editing %}Edit savings goal{% else %}Add savings goal{% endif %}</h2>
+  </div>
+
+  <div class="card form-card">
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label class="form-label" for="id_name">{{ form.name.label }}</label>
+        {{ form.name }}
+        {% if form.name.errors %}<p class="form-error">{{ form.name.errors|join:", " }}</p>{% endif %}
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="id_target_amount">{{ form.target_amount.label }}</label>
+          {{ form.target_amount }}
+          {% if form.target_amount.errors %}<p class="form-error">{{ form.target_amount.errors|join:", " }}</p>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="id_saved_amount">{{ form.saved_amount.label }}</label>
+          {{ form.saved_amount }}
+          {% if form.saved_amount.errors %}<p class="form-error">{{ form.saved_amount.errors|join:", " }}</p>{% endif %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_color">{{ form.color.label }}</label>
+        {{ form.color }}
+        {% if form.color.errors %}<p class="form-error">{{ form.color.errors|join:", " }}</p>{% endif %}
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          {% if editing %}Save changes{% else %}Create goal{% endif %}
+        </button>
+        <a href="{% url 'savings_goals' %}" class="btn btn-outline">Cancel</a>
+      </div>
+
+    </form>
+  </div>
+
+  {% if editing %}
+  <div class="danger-zone">
+    <form method="post" action="{% url 'delete_savings_goal' form.instance.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger"
+              onclick="return confirm('Delete this goal?')">Delete goal</button>
+    </form>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

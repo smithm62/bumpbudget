@@ -1,17 +1,156 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block title %}Profile Setup — BumpBudget{% endblock %}
+
 {% block content %}
-<h2>Set up your profile</h2>
-
-{% if form.errors %}
-  <div class="error-box">
-    <p><strong>Please fix the errors below:</strong></p>
-    {{ form.errors }}
+<div class="form-page">
+  <div class="form-page-header">
+    <a href="{% url 'profile' %}" class="back-link">← Profile</a>
+    <h2>Set up your profile</h2>
   </div>
-{% endif %}
 
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Save and continue</button>
-</form>
+  <div class="card form-card">
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      <!-- Personal -->
+      <div class="form-section-title">Personal</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="id_first_name">{{ form.first_name.label }}</label>
+          {{ form.first_name }}
+          {% if form.first_name.errors %}<p class="form-error">{{ form.first_name.errors|join:", " }}</p>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="id_currency">{{ form.currency.label }}</label>
+          {{ form.currency }}
+          {% if form.currency.errors %}<p class="form-error">{{ form.currency.errors|join:", " }}</p>{% endif %}
+        </div>
+      </div>
+
+      <!-- Pregnancy Stage -->
+      <div class="form-section-title">Pregnancy stage</div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_life_stage">{{ form.life_stage.label }}</label>
+        {{ form.life_stage }}
+        <p class="form-hint">{{ form.life_stage.help_text }}</p>
+        {% if form.life_stage.errors %}<p class="form-error">{{ form.life_stage.errors|join:", " }}</p>{% endif %}
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="id_due_date">{{ form.due_date.label }}</label>
+          {{ form.due_date }}
+          <p class="form-hint">{{ form.due_date.help_text }}</p>
+          {% if form.due_date.errors %}<p class="form-error">{{ form.due_date.errors|join:", " }}</p>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="id_child_age_months">{{ form.child_age_months.label }}</label>
+          {{ form.child_age_months }}
+          <p class="form-hint">{{ form.child_age_months.help_text }}</p>
+          {% if form.child_age_months.errors %}<p class="form-error">{{ form.child_age_months.errors|join:", " }}</p>{% endif %}
+        </div>
+      </div>
+
+      <!-- Income -->
+      <div class="form-section-title">Income</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="id_monthly_income">{{ form.monthly_income.label }}</label>
+          {{ form.monthly_income }}
+          <p class="form-hint">{{ form.monthly_income.help_text }}</p>
+          {% if form.monthly_income.errors %}<p class="form-error">{{ form.monthly_income.errors|join:", " }}</p>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="id_partner_monthly_income">{{ form.partner_monthly_income.label }}</label>
+          {{ form.partner_monthly_income }}
+          <p class="form-hint">{{ form.partner_monthly_income.help_text }}</p>
+          {% if form.partner_monthly_income.errors %}<p class="form-error">{{ form.partner_monthly_income.errors|join:", " }}</p>{% endif %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_budget_goal">{{ form.budget_goal.label }}</label>
+        {{ form.budget_goal }}
+        <p class="form-hint">{{ form.budget_goal.help_text }}</p>
+        {% if form.budget_goal.errors %}<p class="form-error">{{ form.budget_goal.errors|join:", " }}</p>{% endif %}
+      </div>
+
+      <!-- Maternity Leave -->
+      <div class="form-section-title">Maternity leave</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="id_maternity_leave_start">{{ form.maternity_leave_start.label }}</label>
+          {{ form.maternity_leave_start }}
+          {% if form.maternity_leave_start.errors %}<p class="form-error">{{ form.maternity_leave_start.errors|join:", " }}</p>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="id_maternity_leave_end">{{ form.maternity_leave_end.label }}</label>
+          {{ form.maternity_leave_end }}
+          {% if form.maternity_leave_end.errors %}<p class="form-error">{{ form.maternity_leave_end.errors|join:", " }}</p>{% endif %}
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="id_employer_full_pay_weeks">{{ form.employer_full_pay_weeks.label }}</label>
+          {{ form.employer_full_pay_weeks }}
+          <p class="form-hint">{{ form.employer_full_pay_weeks.help_text }}</p>
+          {% if form.employer_full_pay_weeks.errors %}<p class="form-error">{{ form.employer_full_pay_weeks.errors|join:", " }}</p>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="id_employer_half_pay_weeks">{{ form.employer_half_pay_weeks.label }}</label>
+          {{ form.employer_half_pay_weeks }}
+          <p class="form-hint">{{ form.employer_half_pay_weeks.help_text }}</p>
+          {% if form.employer_half_pay_weeks.errors %}<p class="form-error">{{ form.employer_half_pay_weeks.errors|join:", " }}</p>{% endif %}
+        </div>
+      </div>
+
+      <div class="form-group form-check-group">
+        <label class="form-check-label">
+          {{ form.taking_additional_unpaid }}
+          {{ form.taking_additional_unpaid.label }}
+        </label>
+        <p class="form-hint">{{ form.taking_additional_unpaid.help_text }}</p>
+        {% if form.taking_additional_unpaid.errors %}<p class="form-error">{{ form.taking_additional_unpaid.errors|join:", " }}</p>{% endif %}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_additional_unpaid_weeks">{{ form.additional_unpaid_weeks.label }}</label>
+        {{ form.additional_unpaid_weeks }}
+        <p class="form-hint">{{ form.additional_unpaid_weeks.help_text }}</p>
+        {% if form.additional_unpaid_weeks.errors %}<p class="form-error">{{ form.additional_unpaid_weeks.errors|join:", " }}</p>{% endif %}
+      </div>
+
+      <!-- Savings -->
+      <div class="form-section-title">Savings</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="id_savings_goal_total">{{ form.savings_goal_total.label }}</label>
+          {{ form.savings_goal_total }}
+          <p class="form-hint">{{ form.savings_goal_total.help_text }}</p>
+          {% if form.savings_goal_total.errors %}<p class="form-error">{{ form.savings_goal_total.errors|join:", " }}</p>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="id_savings_deadline">{{ form.savings_deadline.label }}</label>
+          {{ form.savings_deadline }}
+          <p class="form-hint">{{ form.savings_deadline.help_text }}</p>
+          {% if form.savings_deadline.errors %}<p class="form-error">{{ form.savings_deadline.errors|join:", " }}</p>{% endif %}
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save and continue</button>
+        <a href="{% url 'profile' %}" class="btn btn-outline">Cancel</a>
+      </div>
+
+    </form>
+  </div>
+</div>
 {% endblock %}
