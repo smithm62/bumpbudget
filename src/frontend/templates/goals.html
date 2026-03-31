@@ -70,7 +70,6 @@
       <form method="post" action="{% url 'log_to_goal' goal.pk %}" class="sg-log-form">
         {% csrf_token %}
         <input type="number" name="amount" placeholder="€ amount" step="0.01" min="0.01" required>
-        <input type="text" name="note" placeholder="Note (optional)">
         <button type="submit" class="btn sg-log-btn">+ Log</button>
       </form>
     </div>

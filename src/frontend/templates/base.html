@@ -29,21 +29,26 @@
       <a href="/tracker/"    class="{% if request.resolver_match.url_name == 'tracker' %}active{% endif %}">Maternity Leave</a>
       <a href="/goals/"      class="{% if request.resolver_match.url_name == 'goals' %}active{% endif %}">Goals</a>
       <a href="/resources/"  class="{% if request.resolver_match.url_name == 'resources' %}active{% endif %}">Resources</a>
-      <a href="/community/"  class="{% if request.resolver_match.url_name == 'community' %}active{% endif %}">Community</a>
       {% if user.is_staff %}
       <a href="/staff/"      class="{% if request.resolver_match.url_name == 'staff_dashboard' %}active{% endif %}">Staff</a>
       {% endif %}
+      <a href="/community/" class="{% if request.resolver_match.url_name == 'community' %}active{% endif %}">
+  Community
+  <span id="inbox-unread-badge" class="nav-badge" style="display:none;"></span>
+</a>
     </nav>
 
     {% if user.is_authenticated %}
     <div class="sidebar-profile" id="profileTrigger">
       <div class="sidebar-avatar">
-        {{ user.first_name|slice:":1"|upper }}{{ user.last_name|slice:":1"|upper }}
+        {{ user.userprofile.first_name|default:user.username|slice:":1"|upper }}
       </div>
       <div class="sidebar-user-info">
-        <span class="sidebar-username">{{ user.first_name }} {{ user.last_name }}</span>
-        <span class="sidebar-useremail">{{ user.email }}</span>
-      </div>
+  <span class="sidebar-username">
+    {{ user.userprofile.first_name|default:user.username }}
+  </span>
+  <span class="sidebar-useremail">{{ user.email }}</span>
+</div>
       <span class="sidebar-chevron">···</span>
 
       <div class="profile-popup" id="profilePopup">
@@ -68,6 +73,7 @@
     {% endif %}
 
   </aside>
+  
 
   <!-- ========== PAGE CONTENT ========== -->
   <main class="page-content">
@@ -138,6 +144,10 @@
   });
 </script>
 {% endif %}
+<script>
+  window.unreadMessageUrl = "{% url 'unread_message_count' %}";
+</script>
+<script src="{% static 'js/ui.js' %}"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{% static 'js/ui.js' %}"></script>

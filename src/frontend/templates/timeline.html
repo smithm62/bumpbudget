@@ -69,20 +69,19 @@
       {% endif %}
     </div>
 
-    <!-- Current Focus Card -->
     <div class="card focus-card">
-      <h3>This Month's Focus</h3>
-      <ul class="focus-list">
-        {% for item in timeline|slice:":1" %}
-          {% for task in item.tasks %}
-            <li>
-              <input type="checkbox" id="focus_{{ forloop.counter }}">
-              <label for="focus_{{ forloop.counter }}">{{ task }}</label>
-            </li>
-          {% endfor %}
-        {% endfor %}
-      </ul>
-    </div>
+  <h3>This Month's Focus</h3>
+  <ul class="focus-list">
+    {% if current_focus %}
+      {% for task in current_focus.tasks %}
+        <li>
+          <input type="checkbox" id="focus_{{ forloop.counter }}">
+          <label for="focus_{{ forloop.counter }}">{{ task }}</label>
+        </li>
+      {% endfor %}
+    {% endif %}
+  </ul>
+</div>
 
   </div>
 
@@ -93,7 +92,7 @@
   {% if current_month > 1 %}
   <div class="past-months-toggle">
     <button class="btn btn-outline past-months-btn" id="pastMonthsBtn" onclick="togglePastMonths()">
-      📅 Show previous months
+       Show previous months
     </button>
   </div>
   {% endif %}

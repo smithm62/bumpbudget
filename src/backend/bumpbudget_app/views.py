@@ -467,6 +467,8 @@ def timeline(request):
     baby_image = f"images/baby_sizes/{baby_size}.png" if baby_size else ""
     due_date_formatted = profile.due_date.strftime("%d %B %Y") if profile.due_date else "Not set"
 
+    current_focus = next((m for m in timeline_data if m["month"] == current_month), None)
+
     context = {
         "profile":          profile,
         "current_week":     current_week,
@@ -478,6 +480,7 @@ def timeline(request):
         "baby_image":       baby_image,
         "current_trimester": current_trimester,
         "due_date":         due_date_formatted,
+        "current_focus": current_focus,
     }
     return render(request, "timeline.html", context)
 
@@ -534,10 +537,16 @@ def tracker(request):
         employer_paid = emp_full + emp_half
         stat_weeks_available = max(0, 26 - employer_paid)
 
-        phase_full_weeks   = min(emp_full, leave_weeks_total)
-        phase_half_weeks   = min(emp_half, max(0, leave_weeks_total - phase_full_weeks))
-        phase_stat_weeks   = min(stat_weeks_available, max(0, leave_weeks_total - phase_full_weeks - phase_half_weeks))
-        phase_unpaid_weeks = max(0, leave_weeks_total - phase_full_weeks - phase_half_weeks - phase_stat_weeks)
+        # Unpaid weeks come directly from the form — don't infer from date remainder
+        if profile.taking_additional_unpaid and profile.additional_unpaid_weeks:
+            phase_unpaid_weeks = profile.additional_unpaid_weeks
+        else:
+            phase_unpaid_weeks = 0
+
+        paid_weeks_in_leave = max(0, leave_weeks_total - phase_unpaid_weeks)
+        phase_full_weeks   = min(emp_full, paid_weeks_in_leave)
+        phase_half_weeks   = min(emp_half, max(0, paid_weeks_in_leave - phase_full_weeks))
+        phase_stat_weeks   = min(stat_weeks_available, max(0, paid_weeks_in_leave - phase_full_weeks - phase_half_weeks))
         paid_weeks = phase_full_weeks + phase_half_weeks + phase_stat_weeks
 
         phase_full_monthly = monthly_income
@@ -553,6 +562,25 @@ def tracker(request):
         phase_stat_end     = phase_stat_start + timedelta(weeks=phase_stat_weeks)
         phase_unpaid_start = phase_stat_end
         phase_unpaid_end   = profile.maternity_leave_end
+
+        # Snap the last paid phase's end date to match the form-entered leave end date.
+        # Integer week arithmetic may leave a gap of a few days.
+        if phase_unpaid_weeks == 0:
+            if phase_stat_weeks > 0:
+                phase_stat_end     = profile.maternity_leave_end
+                phase_unpaid_start = profile.maternity_leave_end
+            elif phase_half_weeks > 0:
+                phase_half_end     = profile.maternity_leave_end
+                phase_stat_start   = profile.maternity_leave_end
+                phase_stat_end     = profile.maternity_leave_end
+                phase_unpaid_start = profile.maternity_leave_end
+            elif phase_full_weeks > 0:
+                phase_full_end     = profile.maternity_leave_end
+                phase_half_start   = profile.maternity_leave_end
+                phase_half_end     = profile.maternity_leave_end
+                phase_stat_start   = profile.maternity_leave_end
+                phase_stat_end     = profile.maternity_leave_end
+                phase_unpaid_start = profile.maternity_leave_end
 
         max_w = max(phase_full_weeks, phase_half_weeks, phase_stat_weeks, phase_unpaid_weeks, 1)
         phase_full_pct   = round(phase_full_weeks   / max_w * 100)
@@ -1264,3 +1292,12 @@ def start_conversation(request, user_id):
     conversation = Conversation.objects.create()
     conversation.participants.add(request.user, other_user)
     return redirect('conversation_detail', conversation_id=conversation.id)
+
+@login_required
+def unread_message_count(request):
+    count = Message.objects.filter(
+        conversation__participants=request.user,
+        is_read=False
+    ).exclude(sender=request.user).count()
+
+    return JsonResponse({"unread_count": count})

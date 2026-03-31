@@ -47,4 +47,5 @@ urlpatterns = [
     path('inbox/', views.inbox, name='inbox'),
     path('inbox/<int:conversation_id>/', views.conversation_detail, name='conversation_detail'),
     path('message/<int:user_id>/', views.start_conversation, name='start_conversation'),
-]
+    path("inbox/unread-count/", views.unread_message_count, name="unread_message_count"),
+]   

@@ -100,12 +100,11 @@
   <div class="phase-cards-grid">
 
     <!-- Full Pay -->
+    {% if phase_full_weeks > 0 %}
     <div class="phase-card phase-card-full">
       <div class="phase-card-img-wrap phase-img-green">
-        {% if phase_full_weeks > 0 %}
-          <img src="{% static 'images/moon/full.png' %}" alt="Full Pay" class="phase-card-img"
-               onerror="this.style.display='none'">
-        {% endif %}
+        <img src="{% static 'images/moon/full.png' %}" alt="Full Pay" class="phase-card-img"
+             onerror="this.style.display='none'">
         <span class="phase-card-weeks-badge">{{ phase_full_weeks }}w</span>
       </div>
       <div class="phase-card-body">
@@ -115,14 +114,14 @@
         <p class="phase-card-note">Your full salary paid by your employer.</p>
       </div>
     </div>
+    {% endif %}
 
     <!-- Half Pay -->
+    {% if phase_half_weeks > 0 %}
     <div class="phase-card phase-card-half">
       <div class="phase-card-img-wrap phase-img-sage">
-        {% if phase_half_weeks > 0 %}
-          <img src="{% static 'images/moon/half.png' %}" alt="Half Pay" class="phase-card-img"
-               onerror="this.style.display='none'">
-        {% endif %}
+        <img src="{% static 'images/moon/half.png' %}" alt="Half Pay" class="phase-card-img"
+             onerror="this.style.display='none'">
         <span class="phase-card-weeks-badge">{{ phase_half_weeks }}w</span>
       </div>
       <div class="phase-card-body">
@@ -132,6 +131,7 @@
         <p class="phase-card-note">Your employer pays half your normal salary.</p>
       </div>
     </div>
+    {% endif %}
 
     <!-- Statutory -->
     <div class="phase-card phase-card-statutory">
@@ -152,8 +152,6 @@
     {% if phase_unpaid_weeks > 0 %}
     <div class="phase-card phase-card-unpaid">
       <div class="phase-card-img-wrap phase-img-grey">
-        <img src="{% static 'images/tracker/phase_unpaid.png' %}" alt="Unpaid" class="phase-card-img"
-             onerror="this.style.display='none'">
         <span class="phase-card-weeks-badge">{{ phase_unpaid_weeks }}w</span>
       </div>
       <div class="phase-card-body">

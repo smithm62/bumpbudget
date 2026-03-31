@@ -39,3 +39,81 @@ document.addEventListener("DOMContentLoaded", () => {
     el.style.width = `${width}%`;
   });
 });
+
+
+let lastUnreadCount = 0;
+
+function ensureToastContainer() {
+  let container = document.getElementById("toastContainer");
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "toastContainer";
+    container.className = "toast-container";
+    document.body.appendChild(container);
+  }
+  return container;
+}
+
+function showInboxToast(message) {
+  const container = ensureToastContainer();
+
+  const toast = document.createElement("div");
+  toast.className = "toast toast-info";
+  toast.innerHTML = `
+    <img src="/static/images/favicon.png" alt="" style="width:28px;height:28px;object-fit:contain;flex-shrink:0;border-radius:6px;">
+    <span class="toast-text">${message}</span>
+    <button class="toast-close">✕</button>
+  `;
+
+  toast.querySelector(".toast-close").addEventListener("click", () => {
+    toast.remove();
+  });
+
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add("toast-fade");
+    setTimeout(() => toast.remove(), 400);
+  }, 4000);
+}
+
+function updateUnreadBadge(count) {
+  const badge = document.getElementById("inbox-unread-badge");
+  if (!badge) return;
+
+  if (count > 0) {
+    badge.textContent = count;
+    badge.style.display = "inline-flex";
+  } else {
+    badge.style.display = "none";
+  }
+}
+
+function checkUnreadMessages() {
+  if (!window.unreadMessageUrl) return;
+
+  fetch(window.unreadMessageUrl, {
+    headers: {
+      "X-Requested-With": "XMLHttpRequest"
+    }
+  })
+    .then(response => response.json())
+    .then(data => {
+      const newCount = data.unread_count || 0;
+
+      if (lastUnreadCount !== 0 && newCount > lastUnreadCount) {
+        showInboxToast("You have a new message");
+      }
+
+      lastUnreadCount = newCount;
+      updateUnreadBadge(newCount);
+    })
+    .catch(error => {
+      console.log("Unread check failed:", error);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  checkUnreadMessages();
+  setInterval(checkUnreadMessages, 5000);
+});
