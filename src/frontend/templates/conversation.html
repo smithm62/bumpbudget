@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Chat — BumpBudget{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+  <a href="{% url 'inbox' %}" class="back-link">← Inbox</a>
+  <h1>{{ other_user.userprofile.first_name|default:other_user.username }}</h1>
+</div>
+
+<div class="chat-wrap">
+
+  <div class="chat-messages" id="chat-messages">
+    {% for message in messages_list %}
+      <div class="chat-bubble {% if message.sender == request.user %}chat-bubble-mine{% else %}chat-bubble-theirs{% endif %}">
+        <p class="chat-body">{{ message.body }}</p>
+        <span class="chat-time">{{ message.created_at|timesince }} ago</span>
+      </div>
+    {% empty %}
+      <p class="small" style="text-align:center;padding:2rem;">No messages yet — say hello!</p>
+    {% endfor %}
+  </div>
+
+  <form method="post" class="chat-form">
+    {% csrf_token %}
+    <textarea name="body" class="chat-input" placeholder="Write a message..." rows="2" required></textarea>
+    <button type="submit" class="btn btn-primary">Send</button>
+  </form>
+
+</div>
+
+<script>
+  const chat = document.getElementById('chat-messages');
+  if (chat) chat.scrollTop = chat.scrollHeight;
+</script>
+
+{% endblock %}

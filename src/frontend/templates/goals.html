@@ -7,7 +7,7 @@
     <div class="goals-hero-left">
       <p class="goals-hero-eyebrow">Your financial journey</p>
       <h1 class="goals-hero-title">Every big journey<br><em>starts with a goal.</em></h1>
-      <p class="goals-hero-sub">Tick off milestones as you go — you've got this.</p>
+      <p class="goals-hero-sub">Tick off milestones as you go - you've got this!</p>
     </div>
     <div class="goals-hero-right">
       <div class="goals-hero-badge">
@@ -28,103 +28,93 @@
     </div>
   </div>
 
-  <!-- ===== SAVINGS SPOTLIGHT ===== -->
+  <!-- SAVINGS SPOTLIGHT -->
   <div class="card goals-savings-spotlight">
     <div class="savings-spotlight-left">
-      <p class="card-label">Savings Goal</p>
-      {% if profile.savings_goal_total %}
-        <p class="savings-spotlight-amount">€{{ total_saved }} <span>/ €{{ profile.savings_goal_total }}</span></p>
-        <div class="savings-spotlight-bar-wrap">
-          <div class="savings-spotlight-bar" style="--bar-w: {{ savings_pct }}%;"></div>
-          <span class="savings-spotlight-pct">{{ savings_pct }}%</span>
-        </div>
-        {% if profile.savings_deadline %}
-          <p class="savings-spotlight-deadline">Deadline · {{ profile.savings_deadline|date:"d M Y" }}</p>
-        {% endif %}
-      {% else %}
-        <p class="savings-spotlight-amount">€{{ total_saved }} <span>saved so far</span></p>
-        <p class="savings-spotlight-deadline">
-          <a href="{% url 'profile_setup' %}">Set a savings goal in your profile →</a>
-        </p>
-      {% endif %}
+      <p class="card-label">Total Savings</p>
+      <p class="savings-spotlight-amount">€{{ total_saved }} <span>/ €{{ total_target }}</span></p>
+      <div class="savings-spotlight-bar-wrap">
+        <div class="savings-spotlight-bar" style="--bar-w: {{ savings_pct }}%;"></div>
+        <span class="savings-spotlight-pct">{{ savings_pct }}%</span>
+      </div>
     </div>
     <div class="savings-spotlight-right">
-      {% if profile.savings_goal_total %}
       <div class="savings-spotlight-stat">
         <span class="ssl-val">€{{ savings_remaining }}</span>
         <span class="ssl-lbl">Still needed</span>
       </div>
-      {% endif %}
-      <form method="post" action="{% url 'add_savings' %}" class="savings-spotlight-form">
-        {% csrf_token %}
-        <input type="number" name="amount" placeholder="Amount (€)" step="0.01" min="0.01" required>
-        <input type="date" name="date" required>
-        <button type="submit" class="tracker-form-btn">+ Log savings</button>
-      </form>
+      <button type="button" class="btn btn-primary" onclick="openAddGoal()">+ Add goal</button>
     </div>
   </div>
 
-  {% if savings_logs %}
-  <div class="savings-log-wrap">
-    <p class="savings-log-title">Recent Logs</p>
-    <div class="savings-log-list">
-      {% for log in savings_logs %}
-      <div class="savings-log-item">
-        <div class="savings-log-dot"></div>
-        <span class="savings-log-date">{{ log.date|date:"d M Y" }}</span>
-        {% if log.note %}<span class="savings-log-note">{{ log.note }}</span>{% endif %}
-        <span class="savings-log-amount">+ €{{ log.amount }}</span>
+  <!-- INDIVIDUAL SAVINGS GOALS -->
+  {% if savings_goals %}
+  <div class="savings-goals-grid">
+    {% for goal in savings_goals %}
+    <div class="savings-goal-card">
+      <div class="sg-card-header">
+        <span class="sg-name">{{ goal.name }}</span>
+        <button type="button" class="sg-edit-link" onclick="openEditGoal('{{ goal.pk }}', '{{ goal.name }}', '{{ goal.target_amount }}', '{{ goal.saved_amount }}')">Edit</button>
       </div>
-      {% endfor %}
+      <div class="sg-amounts">
+        <span class="sg-saved">€{{ goal.saved_amount }}</span>
+        <span class="sg-target">/ €{{ goal.target_amount }}</span>
+      </div>
+      <div class="sg-bar-wrap">
+        <div class="sg-bar" style="--sg-w: {{ goal.progress_pct }}%;"></div>
+      </div>
+      <div class="sg-bar-footer">
+        <span class="sg-pct">{{ goal.progress_pct }}%</span>
+        <span class="sg-remaining">€{{ goal.remaining }} to go</span>
+      </div>
+      <form method="post" action="{% url 'log_to_goal' goal.pk %}" class="sg-log-form">
+        {% csrf_token %}
+        <input type="number" name="amount" placeholder="€ amount" step="0.01" min="0.01" required>
+        <input type="text" name="note" placeholder="Note (optional)">
+        <button type="submit" class="btn sg-log-btn">+ Log</button>
+      </form>
     </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="sg-empty">
+    <p>No savings goals yet. <a href="#" onclick="openAddGoal(); return false;">Add your first one →</a></p>
   </div>
   {% endif %}
 
   <!-- ===== GOAL CARDS ===== -->
-  <br>
   <div class="goals-grid">
-
     {% for goal in goals %}
     <form method="post" action="{% url 'toggle_goal' goal.id %}" class="goal-card-v2 {% if goal.completed %}goal-card-v2-done{% endif %}">
       {% csrf_token %}
-
-      <!-- Image area -->
       <div class="goal-img-wrap goal-img-{{ goal.colour }}">
         {% if goal.image %}
           <img src="{% static goal.image %}" alt="{{ goal.title }}" class="goal-img">
         {% else %}
           <span class="goal-emoji">{{ goal.icon }}</span>
         {% endif %}
-
-        <!-- Tick overlay -->
         <button type="submit" class="goal-tick {% if goal.completed %}goal-tick-done{% endif %}" title="Mark complete">
           {% if goal.completed %}✓{% endif %}
         </button>
       </div>
-
-      <!-- Text -->
       <div class="goal-card-v2-body">
         <h4 class="goal-card-v2-title {% if goal.completed %}goal-v2-done-title{% endif %}">{{ goal.title }}</h4>
         <p class="goal-card-v2-desc">{{ goal.description }}</p>
       </div>
-
-      <!-- Completion ribbon -->
       {% if goal.completed %}
       <br>
       <div class="goal-done-ribbon">Done ✓</div>
       {% endif %}
-
     </form>
     {% empty %}
       <p class="tracker-hint" style="grid-column:1/-1; padding: 2rem 0;">Goals will appear here automatically.</p>
     {% endfor %}
-
   </div>
 
   <!-- ===== MOTIVATION STRIP ===== -->
   <div class="goals-motivation-strip">
     <div class="motivation-item">
-      <span class="motivation-icon">🌱</span>
+      <span class="motivation-icon">💛</span>
       <p>Small steps add up to big changes.</p>
     </div>
     <div class="motivation-divider"></div>
@@ -134,9 +124,92 @@
     </div>
     <div class="motivation-divider"></div>
     <div class="motivation-item">
-      <span class="motivation-icon">🎯</span>
+      <span class="motivation-icon">💛</span>
       <p>Every goal ticked is a win worth celebrating.</p>
     </div>
   </div>
+
+  <!-- ===== MODALS — must be at bottom, outside all other divs ===== -->
+
+  <!-- ADD GOAL MODAL -->
+  <div class="sg-modal-overlay" id="addGoalModal" style="display:none;">
+    <div class="sg-modal">
+      <div class="sg-modal-header">
+        <h3>Add savings goal</h3>
+        <button class="sg-modal-close" onclick="document.getElementById('addGoalModal').style.display='none'">✕</button>
+      </div>
+      <form method="post" action="{% url 'add_savings_goal' %}">
+        {% csrf_token %}
+        <input type="hidden" name="saved_amount" value="0">
+        <div class="form-group">
+          <label class="form-label">Goal name</label>
+          <input type="text" name="name" placeholder="e.g. Pram, Hospital Bag" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Target amount (€)</label>
+          <input type="number" name="target_amount" placeholder="e.g. 800" step="0.01" min="0" required>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Create goal</button>
+          <button type="button" class="btn btn-outline" onclick="document.getElementById('addGoalModal').style.display='none'">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- EDIT GOAL MODAL -->
+  <div class="sg-modal-overlay" id="editGoalModal" style="display:none;">
+    <div class="sg-modal">
+      <div class="sg-modal-header">
+        <h3>Edit savings goal</h3>
+        <button class="sg-modal-close" onclick="document.getElementById('editGoalModal').style.display='none'">✕</button>
+      </div>
+      <form method="post" id="editGoalForm" action="">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">Goal name</label>
+          <input type="text" name="name" id="editGoalName" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Target amount (€)</label>
+          <input type="number" name="target_amount" id="editGoalTarget" step="0.01" min="0" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Amount saved so far (€)</label>
+          <input type="number" name="saved_amount" id="editGoalSaved" step="0.01" min="0" required>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Save changes</button>
+          <button type="button" class="btn btn-outline" onclick="document.getElementById('editGoalModal').style.display='none'">Cancel</button>
+        </div>
+      </form>
+      <div class="danger-zone" style="margin-top:1rem;">
+        <form method="post" id="deleteGoalForm" action="">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this goal?')">Delete goal</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  function openAddGoal() {
+    document.getElementById('addGoalModal').style.display = 'flex';
+  }
+  function openEditGoal(pk, name, target, saved) {
+    document.getElementById('editGoalForm').action = '/savings/' + pk + '/edit/';
+    document.getElementById('deleteGoalForm').action = '/savings/' + pk + '/delete/';
+    document.getElementById('editGoalName').value = name;
+    document.getElementById('editGoalTarget').value = target;
+    document.getElementById('editGoalSaved').value = saved;
+    document.getElementById('editGoalModal').style.display = 'flex';
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    ['addGoalModal','editGoalModal'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) document.body.appendChild(el);
+    });
+  });
+  </script>
 
 {% endblock %}

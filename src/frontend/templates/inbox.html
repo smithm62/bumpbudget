@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Inbox — BumpBudget{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+  <h1>Inbox</h1>
+  {% if unread_count %}
+    <span class="weeks-remaining-tag">{{ unread_count }} unread</span>
+  {% endif %}
+</div>
+
+<div class="inbox-list">
+  {% for conversation in conversations %}
+    {% for conversation in conversations %}
+  <a href="{% url 'conversation_detail' conversation.id %}"
+     class="inbox-item {% if conversation.last and not conversation.last.is_read and conversation.last.sender != request.user %}inbox-item-unread{% endif %}">
+    <div class="inbox-avatar">{{ conversation.other.username|first|upper }}</div>
+    <div class="inbox-detail">
+      <div class="inbox-name">
+        {{ conversation.other.userprofile.first_name|default:conversation.other.username }}
+      </div>
+      {% if conversation.last %}
+        <div class="inbox-preview">{{ conversation.last.body|truncatewords:10 }}</div>
+        <div class="inbox-time">{{ conversation.last.created_at|timesince }} ago</div>
+      {% endif %}
+    </div>
+    {% if conversation.last and not conversation.last.is_read and conversation.last.sender != request.user %}
+      <span class="inbox-unread-dot"></span>
+    {% endif %}
+  </a>
+{% empty %}
+  ...
+{% endfor %}
+  {% empty %}
+    <div class="comm-empty">
+      <div class="comm-empty-icon">💬</div>
+      <h3>No messages yet</h3>
+      <p>Start a conversation from any post in the community.</p>
+      <a href="{% url 'community' %}" class="btn btn-primary">Go to community</a>
+    </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

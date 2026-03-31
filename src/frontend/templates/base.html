@@ -71,17 +71,73 @@
 
   <!-- ========== PAGE CONTENT ========== -->
   <main class="page-content">
-    {% if messages %}
-      <div class="flash-messages">
-        {% for message in messages %}
-          <div class="flash flash-{{ message.tags }}">{{ message }}</div>
-        {% endfor %}
-      </div>
-    {% endif %}
     {% block content %}{% endblock %}
   </main>
 
 </div>
+
+<footer class="lp-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand-name">BumpBudget</div>
+        <div class="footer-brand-desc">
+          Plan parenthood, not panic. Helping you stay in control of your finances through every stage.
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Product</div>
+        <ul class="footer-links">
+          <li><a href="/dashboard">Dashboard</a></li>
+          <li><a href="/plan">Plans</a></li>
+          <li><a href="/goals">Goals</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Resources</div>
+        <ul class="footer-links">
+          <li><a href="/faq">FAQs</a></li>
+          <li><a href="/resources">Guides</a></li>
+          <li><a href="/community">Community</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Company</div>
+        <ul class="footer-links">
+          <li><a href="/">About</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-divider"></div>
+    <div class="footer-bottom">
+      <span>© 2026 BumpBudget<br>T&C's Apply</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ========== TOAST NOTIFICATIONS ========== -->
+{% if messages %}
+<div class="toast-container" id="toastContainer">
+  {% for message in messages %}
+  <div class="toast toast-{{ message.tags }}" id="toast-{{ forloop.counter }}">
+    <img src="{% static 'images/favicon.png' %}" alt="" style="width:28px;height:28px;object-fit:contain;flex-shrink:0;border-radius:6px;">
+    <span class="toast-text">{{ message }}</span>
+    <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+  </div>
+  {% endfor %}
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.toast').forEach(function(toast) {
+      setTimeout(function() {
+        toast.classList.add('toast-fade');
+        setTimeout(function() { toast.remove(); }, 400);
+      }, 4000);
+    });
+  });
+</script>
+{% endif %}
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{% static 'js/ui.js' %}"></script>
@@ -99,57 +155,15 @@
   }
 </script>
 
-</body>
-</html>
-
-</body>
-<footer class="lp-footer">
-  <div class="container">
-
-    <div class="footer-top">
-
-      <div>
-        <div class="footer-brand-name">BumpBudget</div>
-        <div class="footer-brand-desc">
-          Plan parenthood, not panic. Helping you stay in control of your finances through every stage.
-        </div>
-      </div>
-
-      <div>
-        <div class="footer-col-title">Product</div>
-        <ul class="footer-links">
-          <li><a href="/dashboard">Dashboard</a></li>
-          <li><a href="/plan">Plans</a></li>
-          <li><a href="/goals">Goals</a></li>
-        </ul>
-      </div>
-
-      <div>
-        <div class="footer-col-title">Resources</div>
-        <ul class="footer-links">
-          <li><a href="/faq">FAQs</a></li>
-          <li><a href="/resources">Guides</a></li>
-          <li><a href="/community">Community</a></li>
-        </ul>
-      </div>
-
-      <div>
-        <div class="footer-col-title">Company</div>
-        <ul class="footer-links">
-          <li><a href="/">About</a></li>
-          <li><a href="/contact">Contact</a></li>
-        </ul>
-      </div>
-
-    <div class="footer-divider"></div>
-
-    <div class="footer-bottom">
-      <span>© 2026 BumpBudget <br>
-        T&C's Apply</span>
-    </div>
-
-  </div>
-</footer>
+<div id="modal-root"></div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    ['addGoalModal','editGoalModal'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) document.body.appendChild(el);
+    });
+  });
+</script>
 
 </body>
 </html>

@@ -128,10 +128,15 @@ def profile(request):
     )
 
     savings_goals = SavingsGoal.objects.filter(user=request.user)
-    total_saved = savings_goals.aggregate(
-        t=Coalesce(Sum("saved_amount"), Decimal("0.00"), output_field=DecimalField())
-    ).get("t")
+    savings_goals = SavingsGoal.objects.filter(user=request.user)
 
+    total_saved = sum(g.saved_amount for g in savings_goals) or Decimal("0.00")
+    total_target = sum(g.target_amount for g in savings_goals) or Decimal("0.00")
+
+    savings_pct = (
+        min(100, int((total_saved / total_target) * 100))
+        if total_target > 0 else 0
+    )
     registry_total = (
         Expense.objects
         .filter(user=request.user, is_upcoming=True)
@@ -153,6 +158,9 @@ def profile(request):
         "pregnancy_week": profile.pregnancy_week,
         "trimester": profile.trimester,
         "weeks_until_due": profile.weeks_until_due,
+        "total_saved": total_saved,
+        "total_target": total_target,
+        "savings_pct": savings_pct,
     }
     return render(request, "profile.html", context)
 
@@ -219,7 +227,7 @@ def dashboard(request):
 
     # Savings goals
     savings_goals = SavingsGoal.objects.filter(user=request.user)
-    total_saved   = (
+    total_saved = (
         SavingsEntry.objects
         .filter(user=request.user)
         .aggregate(t=Coalesce(Sum("amount"), Decimal("0.00"), output_field=DecimalField()))
@@ -465,7 +473,7 @@ def timeline(request):
         "remaining_weeks":  remaining_weeks,
         "progress_percent": progress_percent,
         "current_month":    current_month,
-        "timeline":         remaining_months,
+        "timeline":         timeline_data, 
         "baby_size":        baby_size,
         "baby_image":       baby_image,
         "current_trimester": current_trimester,
@@ -647,55 +655,77 @@ def goals(request):
         seed_goals(request.user)
 
     goals_qs = Goal.objects.filter(user=request.user)
-
-    total_saved = (SavingsEntry.objects.filter(user=request.user).aggregate(
-        t=Sum("amount"))["t"] or Decimal("0.00")).quantize(Decimal("0.01"))
-    goal_total = profile.savings_goal_total or Decimal("0.00")
-    savings_remaining = max(goal_total - total_saved, Decimal("0.00")).quantize(Decimal("0.01"))
-    savings_pct = min(round(float(total_saved) / float(goal_total) * 100), 100) if goal_total > 0 else 0
-    savings_logs = SavingsEntry.objects.filter(user=request.user).order_by("-date")[:10]
-
     goals_total    = goals_qs.count()
     goals_complete = goals_qs.filter(completed=True).count()
     goals_pct      = round(goals_complete / goals_total * 100) if goals_total > 0 else 0
     goals_dash      = round(goals_pct / 100 * 314)
     goals_dash_hero = round(goals_pct / 100 * 415)
 
+    # Savings — pull from SavingsGoal objects
+    savings_goals = SavingsGoal.objects.filter(user=request.user)
+    total_target  = sum(g.target_amount for g in savings_goals) or Decimal("0.00")
+    total_saved   = sum(g.saved_amount  for g in savings_goals) or Decimal("0.00")
+    savings_remaining = max(Decimal("0.00"), total_target - total_saved)
+    savings_pct   = min(100, round(float(total_saved) / float(total_target) * 100)) if total_target > 0 else 0
+
+    # Recent logs across all savings entries
+    savings_logs = SavingsEntry.objects.filter(user=request.user).order_by("-date")[:10]
+
     goals_list = []
     for g in goals_qs:
-        entry = {
-            "id": g.id,
-            "title": g.title,
-            "description": g.description,
-            "completed": g.completed,
-            "icon": g.icon,
-            "colour": g.colour,
-            "image": g.image if hasattr(g, "image") and g.image else None,
-            "target_amount": g.target_amount,
-            "saved": Decimal("0.00"),
-            "progress_pct": 0,
-        }
-        if g.target_amount and g.target_amount > 0:
-            entry["saved"] = total_saved
-            entry["progress_pct"] = savings_pct
-        goals_list.append(entry)
+        goals_list.append({
+            "id":           g.id,
+            "title":        g.title,
+            "description":  g.description,
+            "completed":    g.completed,
+            "icon":         g.icon,
+            "colour":       g.colour,
+            "image":        g.image if hasattr(g, "image") and g.image else None,
+        })
 
-    context = {
-        "profile": profile,
-        "goals": goals_list,
-        "goals_total": goals_total,
-        "goals_complete": goals_complete,
-        "goals_pct": goals_pct,
-        "goals_dash": goals_dash,
-        "goals_dash_hero": goals_dash_hero,
-        "total_saved": total_saved,
+    return render(request, "goals.html", {
+        "profile":          profile,
+        "goals":            goals_list,
+        "goals_total":      goals_total,
+        "goals_complete":   goals_complete,
+        "goals_pct":        goals_pct,
+        "goals_dash":       goals_dash,
+        "goals_dash_hero":  goals_dash_hero,
+        "savings_goals":    savings_goals,
+        "savings_logs":     savings_logs,
+        "total_saved":      total_saved,
+        "total_target":     total_target,
         "savings_remaining": savings_remaining,
-        "savings_pct": savings_pct,
-        "savings_logs": savings_logs,
-    }
-    return render(request, "goals.html", context)
+        "savings_pct":      savings_pct,
+    })
 
+import random
 
+GOAL_MESSAGES = [
+    "You're on your way!♥︎ ",
+    "One step closer - keep going! ♥︎",
+    "Look at you smashing it! ⏾",
+    "Every tick counts - you've got this! ❀",
+    "Progress made! Your baby will thank you. ♥︎",
+    "That's the spirit! One goal down! ✧",
+    "You're building something wonderful! ✿",
+    "Small wins add up to big things! ✧",
+    "Goal ticked - you're amazing! ✿",
+    "Your future self is proud of you. ⏾",
+]
+
+SAVINGS_MESSAGES = [
+    "Savings logged — you're doing brilliantly! ♥︎",
+    "Every euro counts — great work! ✿",
+    "Look at those savings grow! ✧",
+    "That's the one! Keep it up! ♥︎",
+    "Your baby bump budget is looking good! ✧",
+    "Another step closer to your goal! ✿",
+    "Saving superstar! ♥︎",
+    "Future you is going to be so grateful! ⏾",
+    "Money in the pot — you've got this! ✧",
+    "Small deposits, big dreams. Keep going! ⏾",
+]
 @login_required
 def toggle_goal(request, goal_id):
     if request.method == "POST":
@@ -703,8 +733,9 @@ def toggle_goal(request, goal_id):
         if goal:
             goal.completed = not goal.completed
             goal.save()
+            if goal.completed:
+                messages.success(request, random.choice(GOAL_MESSAGES))
     return redirect("goals")
-
 
 @login_required
 def add_savings(request):
@@ -796,38 +827,61 @@ def expense_list(request):
 
 @login_required
 def savings_goals(request):
-    goals = SavingsGoal.objects.filter(user=request.user)
-    return render(request, "savings_goals.html", {"goals": goals})
+    profile = request.user.userprofile
+    savings_goals = SavingsGoal.objects.filter(user=request.user)
+    savings_logs = SavingsEntry.objects.filter(user=request.user)[:5]
 
+    # Roll up totals across all goals
+    total_target = sum(g.target_amount for g in savings_goals) or Decimal("0.00")
+    total_saved = sum(g.saved_amount for g in savings_goals) or Decimal("0.00")
+    savings_remaining = max(Decimal("0.00"), total_target - total_saved)
+    savings_pct = min(100, int((total_saved / total_target) * 100)) if total_target else 0
 
+    return render(request, "savings_goals.html", {
+        "savings_goals": savings_goals,
+        "savings_logs": savings_logs,
+        "total_saved": total_saved,
+        "total_target": total_target,
+        "savings_remaining": savings_remaining,
+        "savings_pct": savings_pct,
+    })
 @login_required
 def add_savings_goal(request):
     if request.method == "POST":
-        form = SavingsGoalForm(request.POST)
-        if form.is_valid():
-            goal = form.save(commit=False)
-            goal.user = request.user
-            goal.save()
-            messages.success(request, "Goal created.")
-            return redirect("savings_goals")
-    else:
-        form = SavingsGoalForm()
-    return render(request, "savings_goal_form.html", {"form": form})
+        name          = request.POST.get("name", "").strip()
+        target_amount = request.POST.get("target_amount", "0").strip()
+        color         = request.POST.get("color", "green").strip()
+        if name and target_amount:
+            try:
+                SavingsGoal.objects.create(
+                    user=request.user,
+                    name=name,
+                    target_amount=Decimal(target_amount),
+                    color=color,
+                )
+                messages.success(request, "Goal added!")
+            except Exception:
+                messages.error(request, "Invalid amount.")
+    return redirect("goals")
 
 
 @login_required
 def edit_savings_goal(request, pk):
     goal = get_object_or_404(SavingsGoal, pk=pk, user=request.user)
     if request.method == "POST":
-        form = SavingsGoalForm(request.POST, instance=goal)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Goal updated.")
-            return redirect("savings_goals")
-    else:
-        form = SavingsGoalForm(instance=goal)
-    return render(request, "savings_goal_form.html", {"form": form, "editing": True})
-
+        name          = request.POST.get("name", "").strip()
+        target_amount = request.POST.get("target_amount", "0").strip()
+        saved_amount  = request.POST.get("saved_amount", "0").strip()
+        if name and target_amount:
+            try:
+                goal.name          = name
+                goal.target_amount = Decimal(target_amount)
+                goal.saved_amount  = Decimal(saved_amount)
+                goal.save()
+                messages.success(request, "Goal updated!")
+            except Exception:
+                messages.error(request, "Invalid amount.")
+    return redirect("goals")
 
 @login_required
 def delete_savings_goal(request, pk):
@@ -835,8 +889,30 @@ def delete_savings_goal(request, pk):
     if request.method == "POST":
         goal.delete()
         messages.success(request, "Goal deleted.")
-    return redirect("savings_goals")
+    return redirect("goals")
 
+
+@login_required
+def log_to_goal(request, pk):
+    goal = get_object_or_404(SavingsGoal, pk=pk, user=request.user)
+    if request.method == "POST":
+        amount = request.POST.get("amount", "").strip()
+        note   = request.POST.get("note", "").strip()
+        try:
+            amount = Decimal(amount)
+            if amount > 0:
+                SavingsEntry.objects.create(
+                    user=request.user,
+                    amount=amount,
+                    note=note,
+                    date=timezone.now().date(),
+                )
+                goal.saved_amount += amount
+                goal.save()
+                messages.success(request, random.choice(SAVINGS_MESSAGES))
+        except Exception:
+            messages.error(request, "Invalid amount.")
+    return redirect("goals")
 
 # ---------------------------------------------------------------------------
 # Budget category limits
@@ -889,12 +965,23 @@ def community(request):
         Like.objects.filter(user=request.user).values_list("post_id", flat=True)
     )
 
+    recent_conversations = []
+    for convo in request.user.conversations.order_by('-updated_at')[:3]:
+        other = convo.other_participant(request.user)
+        last_msg = convo.last_message()
+        recent_conversations.append({
+            'id': convo.id,
+            'other': other,
+            'last': last_msg,
+        })
+
     context = {
         "posts": posts,
         "liked_ids": liked_ids,
         "categories": Post.Category.choices,
         "active_category": category,
         "post_form": PostForm(),
+        "recent_conversations": recent_conversations,
     }
     return render(request, "community.html", context)
 
@@ -916,12 +1003,13 @@ def post_detail(request, pk):
             return redirect("post_detail", pk=pk)
     else:
         form = ReplyForm()
-
+    recent_conversations = request.user.conversations.order_by('-updated_at')[:3]
     context = {
         "post": post,
         "replies": replies,
         "reply_form": form,
         "user_liked": user_liked,
+        "recent_conversations": recent_conversations,
     }
     return render(request, "post_detail.html", context)
 
@@ -1092,3 +1180,87 @@ def staff_delete_user(request, user_id):
     target.delete()
     messages.success(request, f"User '{username}' has been deleted.")
     return redirect("staff_dashboard")
+
+# ===========================================================================
+# PRIVATE MESSAGING
+# ===========================================================================
+
+from .models import Conversation, Message
+
+@login_required
+def inbox(request):
+    conversations = Conversation.objects.filter(participants=request.user)
+    
+    conv_data = []
+    for conv in conversations:
+        other = conv.participants.exclude(id=request.user.id).first()
+        last = conv.messages.order_by('-created_at').first()
+        conv_data.append({
+            'id': conv.id,
+            'other': other,
+            'last': last,
+        })
+    
+    unread_count = sum(
+        1 for c in conv_data 
+        if c['last'] and not c['last'].is_read and c['last'].sender != request.user
+    )
+    
+    return render(request, 'inbox.html', {
+        'conversations': conv_data,
+        'unread_count': unread_count,
+        'active_conversation': None,
+        'messages_list': [],
+        'other_user': None,
+    })
+
+
+@login_required
+def conversation_detail(request, conversation_id):
+    conversation = get_object_or_404(
+        Conversation, id=conversation_id, participants=request.user
+    )
+
+    # Mark messages as read
+    conversation.messages.exclude(sender=request.user).update(is_read=True)
+
+    if request.method == 'POST':
+        body = request.POST.get('body', '').strip()
+        if body:
+            Message.objects.create(
+                conversation=conversation,
+                sender=request.user,
+                body=body,
+            )
+            conversation.save()
+            return redirect('conversation_detail', conversation_id=conversation.id)
+
+    messages_list = conversation.messages.all().order_by('created_at')
+    other_user = conversation.participants.exclude(id=request.user.id).first()
+
+    return render(request, 'conversation.html', {
+        'conversation': conversation,
+        'messages_list': messages_list,
+        'other_user': other_user,
+    })
+
+
+@login_required
+def start_conversation(request, user_id):
+    other_user = get_object_or_404(User, id=user_id)
+
+    if other_user == request.user:
+        return redirect('inbox')
+
+    existing = Conversation.objects.filter(
+        participants=request.user
+    ).filter(
+        participants=other_user
+    ).first()
+
+    if existing:
+        return redirect('conversation_detail', conversation_id=existing.id)
+
+    conversation = Conversation.objects.create()
+    conversation.participants.add(request.user, other_user)
+    return redirect('conversation_detail', conversation_id=conversation.id)

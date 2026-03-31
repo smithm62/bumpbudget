@@ -9,7 +9,7 @@
   <div class="comm-hero-left">
     <p class="comm-hero-eyebrow">BumpBudget Community</p>
     <h1 class="comm-hero-title">Ask, share, <em>connect.</em></h1>
-    <p class="comm-hero-sub">Real questions, real answers - from parents who get it.</p>
+    <p class="comm-hero-sub">Real questions, real answers — from parents who get it.</p>
   </div>
   <div class="comm-hero-right">
     <a href="{% url 'create_post' %}" class="btn comm-hero-btn">+ New post</a>
@@ -27,7 +27,6 @@
   </div>
 </div>
 
-
 <div class="comm-filter-bar">
   <a href="{% url 'community' %}"
      class="comm-filter-pill {% if not active_category %}active{% endif %}">
@@ -41,10 +40,8 @@
   {% endfor %}
 </div>
 
-
 <div class="comm-layout">
 
-  <!-- FEED -->
   <div class="comm-feed">
     {% for post in posts %}
       <article class="comm-card {% if post.is_pinned %}comm-card-pinned{% endif %}">
@@ -61,11 +58,8 @@
               <span class="comm-time">{{ post.created_at|timesince }} ago</span>
             </div>
           </div>
-
           <div class="comm-badges">
-            <span class="comm-cat-badge comm-cat-{{ post.category }}">
-              {{ post.get_category_display }}
-            </span>
+            <span class="comm-cat-badge comm-cat-{{ post.category }}">{{ post.get_category_display }}</span>
             {% if post.is_pinned %}
               <span class="comm-pin-badge">
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
@@ -84,8 +78,7 @@
           <div class="comm-stats">
             <form method="post" action="{% url 'toggle_like' post.pk %}">
               {% csrf_token %}
-              <button type="submit"
-                      class="comm-stat-btn {% if post.pk in liked_ids %}comm-liked{% endif %}">
+              <button type="submit" class="comm-stat-btn {% if post.pk in liked_ids %}comm-liked{% endif %}">
                 <svg width="13" height="13" viewBox="0 0 24 24"
                      fill="{% if post.pk in liked_ids %}currentColor{% else %}none{% endif %}"
                      stroke="currentColor" stroke-width="2.5">
@@ -100,6 +93,15 @@
               </svg>
               {{ post.num_replies }}
             </a>
+            {% if not post.is_anonymous and post.author != request.user %}
+              <a href="{% url 'start_conversation' post.author.id %}" class="comm-message-btn">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                Message
+              </a>
+            {% endif %}
           </div>
           <a href="{% url 'post_detail' post.pk %}" class="comm-read-link">Read →</a>
         </div>
@@ -115,7 +117,6 @@
     {% endfor %}
   </div>
 
-  <!-- SIDEBAR -->
   <aside class="comm-sidebar">
 
     <div class="card comm-sidebar-card">
@@ -124,11 +125,43 @@
       <a href="{% url 'create_post' %}" class="btn btn-primary comm-sidebar-btn">+ New post</a>
     </div>
 
+    {% if recent_conversations %}
+      <div class="card comm-sidebar-card">
+        <div class="section-header">
+          <p class="card-title" style="margin:0;">Recent messages</p>
+          <a href="{% url 'inbox' %}" class="section-link">View all →</a>
+        </div>
+        <div class="comm-recent-messages">
+          {% for item in recent_conversations %}
+            <a href="{% url 'conversation_detail' item.id %}" class="comm-recent-msg-item">
+              <div class="comm-recent-msg-avatar">{{ item.other.username|first|upper }}</div>
+              <div class="comm-recent-msg-info">
+                <span class="comm-recent-msg-name">{{ item.other.userprofile.first_name|default:item.other.username }}</span>
+                {% if item.last %}
+                  <span class="comm-recent-msg-preview">{{ item.last.body|truncatewords:6 }}</span>
+                {% endif %}
+              </div>
+              {% if item.last %}
+                {% if not item.last.is_read and item.last.sender != request.user %}
+                  <span class="comm-recent-msg-unread"></span>
+                {% endif %}
+              {% endif %}
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    {% else %}
+      <div class="card comm-sidebar-card">
+        <p class="card-title">Messages</p>
+        <p class="comm-sidebar-sub">No messages yet. Click "Message" on any post to start a private chat.</p>
+        <a href="{% url 'inbox' %}" class="btn btn-outline comm-sidebar-btn">Open inbox</a>
+      </div>
+    {% endif %}
+
     <div class="card comm-sidebar-card">
       <p class="card-title">Browse by topic</p>
       <div class="comm-topic-list">
-        <a href="{% url 'community' %}"
-           class="comm-topic {% if not active_category %}active{% endif %}">
+        <a href="{% url 'community' %}" class="comm-topic {% if not active_category %}active{% endif %}">
           <span>All posts</span>
         </a>
         {% for value, label in categories %}
@@ -141,7 +174,6 @@
     </div>
 
   </aside>
-
 </div>
 
 {% endblock %}

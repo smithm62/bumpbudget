@@ -43,7 +43,7 @@
       </div>
 
       <div class="pregnancy-bar">
-        <div class="pregnancy-progress-fill" style="width: {{ progress_percent }}%;"></div>
+        <div class="pregnancy-progress-fill" style="--tl-w: {{ progress_percent }}%;"></div>
       </div>
 
       <p class="due-date">Due Date: {{ due_date }}</p>
@@ -52,7 +52,6 @@
     <!-- Baby Size Card -->
     <div class="card baby-size-card">
       <h3>Baby's Size This Week</h3>
-
       {% if current_week < 3 %}
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: auto;">
           Baby development begins around week 3.
@@ -90,23 +89,77 @@
   <!-- Milestones -->
   <h2 class="section-title">Upcoming Milestones</h2>
 
+  <!-- Previous months toggle -->
+  {% if current_month > 1 %}
+  <div class="past-months-toggle">
+    <button class="btn btn-outline past-months-btn" id="pastMonthsBtn" onclick="togglePastMonths()">
+      📅 Show previous months
+    </button>
+  </div>
+  {% endif %}
+
   <div class="timeline">
+
+    <!-- Past months — hidden by default -->
+    <div id="pastMonths" style="display:none;">
+      {% for item in timeline %}
+        {% if item.month < current_month %}
+        <div class="timeline-item timeline-item-past" id="month-{{ item.month }}">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <h3 class="timeline-month-title">
+              Month {{ item.month }}
+              <span class="past-badge">Completed</span>
+            </h3>
+            <div class="timeline-detail-grid">
+              <div class="timeline-section timeline-section-focus">
+                <p class="timeline-section-label">Focus</p>
+                <ul class="timeline-task-list">
+                  {% for task in item.tasks %}
+                    <li>{{ task }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+              {% if item.appointments %}
+              <div class="timeline-section timeline-section-appt">
+                <p class="timeline-section-label">Appointments</p>
+                <ul class="timeline-task-list">
+                  {% for appt in item.appointments %}
+                    <li>{{ appt }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+              {% endif %}
+              {% if item.budget_tips %}
+              <div class="timeline-section timeline-section-budget">
+                <p class="timeline-section-label">Budget Tips</p>
+                <ul class="timeline-task-list">
+                  {% for tip in item.budget_tips %}
+                    <li>{{ tip }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <!-- Current and future months — always visible -->
     {% for item in timeline %}
-      <div class="timeline-item {% if item.month == current_month %}current{% endif %}">
-
+      {% if item.month >= current_month %}
+      <div class="timeline-item {% if item.month == current_month %}current{% endif %}" id="month-{{ item.month }}">
         <div class="timeline-dot"></div>
-
         <div class="timeline-content">
-
           <h3 class="timeline-month-title">
             Month {{ item.month }}
             {% if item.month == current_month %}
               <span class="current-badge">You are here</span>
             {% endif %}
           </h3>
-
           <div class="timeline-detail-grid">
-
             <div class="timeline-section timeline-section-focus">
               <p class="timeline-section-label">Focus</p>
               <ul class="timeline-task-list">
@@ -115,7 +168,6 @@
                 {% endfor %}
               </ul>
             </div>
-
             {% if item.appointments %}
             <div class="timeline-section timeline-section-appt">
               <p class="timeline-section-label">Appointments</p>
@@ -126,7 +178,6 @@
               </ul>
             </div>
             {% endif %}
-
             {% if item.budget_tips %}
             <div class="timeline-section timeline-section-budget">
               <p class="timeline-section-label">Budget Tips</p>
@@ -137,13 +188,26 @@
               </ul>
             </div>
             {% endif %}
-
           </div>
-
         </div>
-
       </div>
+      {% endif %}
     {% endfor %}
+
   </div>
+
+  <script>
+  function togglePastMonths() {
+    const el = document.getElementById('pastMonths');
+    const btn = document.getElementById('pastMonthsBtn');
+    if (el.style.display === 'none') {
+      el.style.display = 'block';
+      btn.textContent = 'Hide previous months';
+    } else {
+      el.style.display = 'none';
+      btn.textContent = 'Show previous months';
+    }
+  }
+  </script>
 
 {% endblock %}

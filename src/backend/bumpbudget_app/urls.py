@@ -26,6 +26,7 @@ urlpatterns = [
     path("savings/add/", views.add_savings_goal, name="add_savings_goal"),
     path("savings/<int:pk>/edit/", views.edit_savings_goal, name="edit_savings_goal"),
     path("savings/<int:pk>/delete/", views.delete_savings_goal, name="delete_savings_goal"),
+    path("savings/log/<int:pk>/", views.log_to_goal, name="log_to_goal"),
     # Community
     path("community/", views.community, name="community"),
     path("community/new/", views.create_post, name="create_post"),
@@ -42,4 +43,8 @@ urlpatterns = [
     path("staff/", views.staff_dashboard, name="staff_dashboard"),
     path("staff/user/<int:user_id>/toggle-role/", views.staff_toggle_role, name="staff_toggle_role"),
     path("staff/user/<int:user_id>/delete/", views.staff_delete_user, name="staff_delete_user"),
+    # Messaging
+    path('inbox/', views.inbox, name='inbox'),
+    path('inbox/<int:conversation_id>/', views.conversation_detail, name='conversation_detail'),
+    path('message/<int:user_id>/', views.start_conversation, name='start_conversation'),
 ]

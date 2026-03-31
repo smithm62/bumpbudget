@@ -98,6 +98,10 @@
         <a href="{% url 'expense_list' %}" class="section-link">View all →</a>
       </div>
 
+      <p class="section-subtext">
+        Track where your money is going each month so you can better plan for upcoming baby costs.
+      </p>
+      
       {% if chart_categories %}
         <div class="chart-container">
           <canvas id="spendingChart"></canvas>
