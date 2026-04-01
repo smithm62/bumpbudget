@@ -203,8 +203,6 @@ def dashboard(request):
         return redirect("profile_setup")
     if profile.life_stage == UserProfile.LifeStage.EXPECTING and not profile.due_date:
         return redirect("profile_setup")
-    if profile.life_stage == UserProfile.LifeStage.EARLY and profile.child_age_months is None:
-        return redirect("profile_setup")
 
     today       = timezone.now().date()
     month_start = today.replace(day=1)

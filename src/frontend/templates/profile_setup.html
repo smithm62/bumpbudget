@@ -47,12 +47,16 @@
           <p class="form-hint">{{ form.due_date.help_text }}</p>
           {% if form.due_date.errors %}<p class="form-error">{{ form.due_date.errors|join:", " }}</p>{% endif %}
         </div>
-        <div class="form-group">
-          <label class="form-label" for="id_child_age_months">{{ form.child_age_months.label }}</label>
-          {{ form.child_age_months }}
-          <p class="form-hint">{{ form.child_age_months.help_text }}</p>
-          {% if form.child_age_months.errors %}<p class="form-error">{{ form.child_age_months.errors|join:", " }}</p>{% endif %}
-        </div>
+        {% if profile.life_stage != "EXPECTING" %}
+          <div class="form-group">
+            <label class="form-label" for="id_child_age_months">{{ form.child_age_months.label }}</label>
+            {{ form.child_age_months }}
+            <p class="form-hint">{{ form.child_age_months.help_text }}</p>
+            {% if form.child_age_months.errors %}
+              <p class="form-error">{{ form.child_age_months.errors|join:", " }}</p>
+            {% endif %}
+          </div>
+        {% endif %}
       </div>
 
       <!-- Income -->

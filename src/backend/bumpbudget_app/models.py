@@ -11,8 +11,8 @@ from decimal import Decimal
 class UserProfile(models.Model):
     class LifeStage(models.TextChoices):
         EXPECTING = "EXPECTING", "Expecting (pregnant)"
-        EARLY     = "EARLY",     "Early parenthood (0–2 years)"
-        PLANNING  = "PLANNING",  "Planning to try"
+        #EARLY     = "EARLY",     "Early parenthood (0–2 years)"
+        #PLANNING  = "PLANNING",  "Planning to try"
 
     class Currency(models.TextChoices):
         EUR = "EUR", "EUR (€)"
@@ -28,11 +28,11 @@ class UserProfile(models.Model):
 
     due_date = models.DateField(null=True, blank=True)
 
-    child_age_months = models.IntegerField(
-        null=True,
-        blank=True,
-        validators=[MinValueValidator(0), MaxValueValidator(24)],
-    )
+    #child_age_months = models.IntegerField(
+    #    null=True,
+    #    blank=True,
+    #    validators=[MinValueValidator(0), MaxValueValidator(24)],
+    #)
 
     monthly_income = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True,
