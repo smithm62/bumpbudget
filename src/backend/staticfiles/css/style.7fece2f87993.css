@@ -1964,11 +1964,6 @@ select {
 @media (max-width: 768px) {
   .site-header {
     padding: 0 1rem;
-    height: 70px;
-  }
-  
-  .brand img {
-    height: 50px;
   }
   
   .mobile-menu-btn {
@@ -1978,8 +1973,6 @@ select {
   .sidebar {
     transform: translateX(-100%);
     z-index: 1000;
-    height: calc(100vh - 70px);
-    top: 70px;
   }
   
   .sidebar.mobile-open {
@@ -1991,33 +1984,7 @@ select {
     width: 100%;
     padding: 1.5rem 1rem 2rem;
   }
-
-  .lp-footer {
-    margin-left: 0;
-  }
-
-  /* Goals hero stacks on mobile */
-  .goals-hero {
-    flex-direction: column;
-    text-align: center;
-    padding: 2rem 1.5rem;
-  }
-
-  /* Community filter: horizontal scroll instead of wrapping */
-  .comm-filter-bar {
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 4px;
-  }
-
-  /* Prevent card content from overflowing narrow screens */
-  .card { word-break: break-word; }
-
-  /* Table overflow protection */
-  .adm-table-wrap,
-  .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-
+  
   /* Overlay for mobile sidebar */
   .sidebar::before {
     content: '';
@@ -2039,23 +2006,6 @@ select {
   }
 }
 
-/* Tablet adjustments */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .page-content {
-    margin-left: 200px;
-    width: calc(100% - 200px);
-    padding: 2rem 1.5rem 3rem;
-  }
-
-  .sidebar {
-    width: 200px;
-  }
-
-  .lp-footer {
-    margin-left: 200px;
-  }
-}
-
 /* ========== FLASH MESSAGES ========== */
 .flash-messages { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.25rem; }
 .flash {
@@ -2072,12 +2022,8 @@ select {
 
 @media (max-width: 600px) {
   .page-content { padding: 1.25rem 1rem 2rem; }
-  .footer-top   { grid-template-columns: 1fr; gap: 1.5rem; }
+  .footer-top   { grid-template-columns: 1fr 1fr; }
   .form-row     { grid-template-columns: 1fr; }
-
-  .lp-footer { padding: 2rem 0 1rem; margin-top: 2rem; }
-  .lp-footer .container { padding: 0 1.25rem; }
-  .footer-brand-desc { max-width: 100%; }
 }
 @media (max-width: 560px) {
   .comm-filter-bar  { gap: 6px; }
@@ -2585,20 +2531,6 @@ select {
   to   { opacity: 0; transform: translateX(60px); }
 }
 
-/* Mobile adjustments for toast */
-@media (max-width: 480px) {
-  .toast-container {
-    top: 1rem;
-    right: 1rem;
-    left: 1rem;
-  }
-  
-  .toast {
-    min-width: auto;
-    max-width: none;
-  }
-}
-
 /* ================= TIMELINE FILTER ================= */
 .timeline-filter {
   margin-bottom: 1.75rem;
@@ -2715,46 +2647,4 @@ select {
   font-size: 11px;
   font-weight: 700;
   line-height: 1;
-}
-
-/* ================= ADDITIONAL RESPONSIVE BREAKPOINTS ================= */
-
-/* Tablet: landing-page 3-col grid → 2-col */
-@media (max-width: 900px) {
-  .grid-3 { grid-template-columns: 1fr 1fr; }
-}
-
-/* Small phones (≤600px): leave stats 2-col */
-@media (max-width: 600px) {
-  .leave-stats-grid { grid-template-columns: 1fr 1fr; }
-  .grid-3 { grid-template-columns: 1fr; }
-  .goals-grid { grid-template-columns: 1fr; }
-}
-
-/* Phones (≤480px): collapse most grids to single column */
-@media (max-width: 480px) {
-  .dashboard-stat-grid   { grid-template-columns: 1fr 1fr; }
-  .dashboard-quick-grid  { grid-template-columns: 1fr 1fr; }
-  .leave-stats-grid      { grid-template-columns: 1fr; }
-  .profile-stats-grid    { grid-template-columns: 1fr; }
-  .adm-stat-grid         { grid-template-columns: 1fr 1fr; }
-  .goals-hero            { padding: 1.5rem 1.25rem; }
-
-  /* Prevent hero titles from being too large */
-  .goals-hero h1,
-  .goals-hero h2 { font-size: 1.6rem; }
-}
-
-/* Very small phones (≤400px): everything single column */
-@media (max-width: 400px) {
-  .dashboard-stat-grid   { grid-template-columns: 1fr; }
-  .dashboard-quick-grid  { grid-template-columns: 1fr 1fr; }
-  .adm-stat-grid         { grid-template-columns: 1fr; }
-  .leave-stats-grid      { grid-template-columns: 1fr; }
-
-  /* Slightly smaller base font for tiny screens */
-  body { font-size: 14px; }
-
-  /* Tighten card padding */
-  .card { padding: 1.25rem; }
 }

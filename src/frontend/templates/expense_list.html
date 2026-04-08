@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="dash-hero" style="margin-bottom:1.75rem;">
+  <div>
+    <h1 class="welcome-title">All Expenses</h1>
+    <p class="welcome-sub">Track and manage every expense in one place.</p>
+  </div>
+  <a href="{% url 'add_expense' %}" class="btn btn-primary">+ Add expense</a>
+</div>
+
+<div class="card" style="padding:0; overflow:hidden;">
+
+  {% if expenses %}
+  <div style="overflow-x:auto; -webkit-overflow-scrolling:touch;">
+    <table class="adm-table" style="width:100%; min-width:500px;">
+      <thead>
+        <tr>
+          <th style="padding:14px 16px;">Description</th>
+          <th>Category</th>
+          <th>Date</th>
+          <th>Type</th>
+          <th style="text-align:right;">Amount</th>
+          <th style="text-align:right; padding-right:16px;"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in expenses %}
+        <tr>
+          <td style="padding:12px 16px;">
+            <span class="cost-label">{{ e.description|default:e.get_category_display }}</span>
+            {% if e.milestone %}
+              <span class="expense-cat" style="display:block;">{{ e.get_milestone_display }}</span>
+            {% endif %}
+          </td>
+          <td>
+            <span class="expense-cat">{{ e.get_category_display }}</span>
+          </td>
+          <td>
+            <span style="font-size:13px; color:var(--text-muted);">{{ e.date|date:"j M Y" }}</span>
+          </td>
+          <td>
+            {% if e.is_upcoming %}
+              <span style="font-size:11px; font-weight:600; padding:3px 8px; border-radius:99px; background:var(--accent-soft); color:var(--accent);">Upcoming</span>
+            {% else %}
+              <span style="font-size:11px; font-weight:600; padding:3px 8px; border-radius:99px; background:var(--primary-soft); color:var(--primary);">Spent</span>
+            {% endif %}
+          </td>
+          <td style="text-align:right;">
+            <span class="cost-amount">{{ profile.currency_symbol }}{{ e.amount|floatformat:2|intcomma }}</span>
+          </td>
+          <td style="text-align:right; padding-right:16px; white-space:nowrap;">
+            <a href="{% url 'edit_expense' e.pk %}" class="row-edit-link">Edit</a>
+            <form method="post" action="{% url 'delete_expense' e.pk %}" style="display:inline; margin-left:8px;">
+              {% csrf_token %}
+              <button type="submit" class="row-edit-link"
+                style="background:none;border:none;padding:0;cursor:pointer;color:var(--coral);font-size:13px;"
+                onclick="return confirm('Delete this expense?')">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div style="padding:14px 16px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+    <span style="font-size:13px; color:var(--text-muted);">{{ expenses|length }} expense{{ expenses|length|pluralize }}</span>
+    <span class="cost-amount">Total: {{ profile.currency_symbol }}{{ total|floatformat:2|intcomma }}</span>
+  </div>
+
+  {% else %}
+  <div style="padding:3rem 2rem; text-align:center;">
+    <p style="color:var(--text-light); margin-bottom:1rem;">No expenses yet.</p>
+    <a href="{% url 'add_expense' %}" class="btn btn-primary">+ Add your first expense</a>
+  </div>
+  {% endif %}
+
+</div>
+
+<div style="margin-top:1rem;">
+  <a href="{% url 'dashboard' %}" class="section-link">← Back to Dashboard</a>
+</div>
+{% endblock %}

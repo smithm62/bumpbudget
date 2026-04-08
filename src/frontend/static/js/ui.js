@@ -1,4 +1,50 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Mobile menu functionality
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+  const sidebar = document.querySelector('.sidebar');
+  
+  if (mobileMenuBtn && sidebar) {
+    function closeSidebar() {
+      mobileMenuBtn.classList.remove('open');
+      sidebar.classList.remove('mobile-open');
+      document.body.style.overflow = '';
+    }
+
+    mobileMenuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (sidebar.classList.contains('mobile-open')) {
+        closeSidebar();
+      } else {
+        mobileMenuBtn.classList.add('open');
+        sidebar.classList.add('mobile-open');
+        if (window.innerWidth <= 768) document.body.style.overflow = 'hidden';
+      }
+    });
+
+    // Close when clicking outside the sidebar on mobile
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth <= 768 && sidebar.classList.contains('mobile-open')) {
+        if (!sidebar.contains(e.target) && e.target !== mobileMenuBtn) {
+          closeSidebar();
+        }
+      }
+    });
+
+    // Close when clicking a nav link on mobile
+    sidebar.querySelectorAll('.sidebar-nav a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 768) closeSidebar();
+      });
+    });
+
+    // Re-enable scroll if window is resized above mobile breakpoint
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768) {
+        document.body.style.overflow = '';
+      }
+    });
+  }
+
   const canvas = document.getElementById("spendingChart");
   if (canvas) {
     const dataElement = document.getElementById("spending-data");

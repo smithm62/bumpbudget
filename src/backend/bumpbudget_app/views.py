@@ -844,7 +844,9 @@ def delete_expense(request, pk):
 @login_required
 def expense_list(request):
     expenses = Expense.objects.filter(user=request.user).order_by("-date")
-    return render(request, "expense_list.html", {"expenses": expenses})
+    profile = request.user.userprofile
+    total = sum(e.amount for e in expenses)
+    return render(request, "expense_list.html", {"expenses": expenses, "profile": profile, "total": total})
 
 
 # ---------------------------------------------------------------------------
