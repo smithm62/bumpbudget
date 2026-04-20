@@ -2,13 +2,19 @@
 {% load static %}
 
 {% block content %}
+<div class="resources-page">
 
-  <!-- Page Heading -->
-  <div class="page-heading">
-    <h1>Your Pregnancy Journey</h1>
-    {% if remaining_weeks %}
+  <!-- Hero -->
+  <div class="res-hero">
+    <div class="res-hero-text">
+      <p class="res-hero-eyebrow">Your personalised timeline</p>
+      <h1 class="res-hero-title">Your Pregnancy Journey</h1>
+      <p class="res-hero-sub">{% if remaining_weeks %}
       <span class="weeks-remaining-tag">{{ remaining_weeks }} weeks to go</span>
-    {% endif %}
+      {% endif %}
+    </p>
+    </div>
+    <img src="{% static 'images/journey.png' %}" alt="" class="res-hero-img">
   </div>
 
   <!-- Top 3 Cards -->

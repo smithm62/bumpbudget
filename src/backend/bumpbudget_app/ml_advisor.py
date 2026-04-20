@@ -94,7 +94,7 @@ COST_SCENARIOS = {
     "Essential": {
         "total": 3000,
         "label": "Essential",
-        "description": "Covers the basics — second-hand where possible, minimal spend.",
+        "description": "Covers the basics - second-hand where possible, minimal spend.",
         "colour": "green",
         "items": {
             "Baby Equipment": 1200,

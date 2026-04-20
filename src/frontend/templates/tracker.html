@@ -2,16 +2,23 @@
 {% load static %}
 
 {% block content %}
+<div class="resources-page">
 
-  <!-- Page Heading -->
-  <div class="page-heading">
-    <h1>Maternity Leave Tracker</h1>
-    {% if days_until_leave is not None and days_until_leave > 0 %}
-      <span class="weeks-remaining-tag">{{ days_until_leave }} days until leave</span>
-    {% elif days_until_leave == 0 %}
-      <span class="weeks-remaining-tag">Leave starts today!</span>
-    {% endif %}
+  <!-- Hero -->
+  <div class="res-hero">
+    <div class="res-hero-text">
+      <p class="res-hero-eyebrow">keep track of maternity leave days</p>
+      <h1 class="res-hero-title">Maternity Leave Tracker</h1>
+      <p class="res-hero-sub">{% if days_until_leave is not None and days_until_leave > 0 %}
+          <span class="weeks-remaining-tag">{{ days_until_leave }} days until leave</span>
+        {% elif days_until_leave == 0 %}
+          <span class="weeks-remaining-tag">Leave starts today!</span>
+        {% endif %}
+    </p>
+    </div>
+    <img src="{% static 'images/pregnancy.png' %}" alt="" class="res-hero-img">
   </div>
+
 
   {% if not profile.maternity_leave_start or not profile.maternity_leave_end %}
   <div class="card tracker-empty-card">
