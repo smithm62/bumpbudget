@@ -37,11 +37,8 @@ class ProfileSetupForm(forms.ModelForm):
             "employer_half_pay_weeks",
             "taking_additional_unpaid",
             "additional_unpaid_weeks",
-            "savings_goal_total",
-            "savings_deadline",
             "currency",
             "first_name",
-            "budget_goal",
         ]
         widgets = {
             "due_date":              forms.DateInput(attrs={"type": "date"}),
@@ -76,8 +73,6 @@ class ProfileSetupForm(forms.ModelForm):
             "employer_half_pay_weeks": "How many weeks does your employer pay half your salary? Leave blank if unsure.",
             "taking_additional_unpaid": "In Ireland you can take up to 16 extra unpaid weeks after the 26 paid weeks.",
             "additional_unpaid_weeks": "How many of the optional unpaid weeks are you planning to take? (0–16)",
-            "savings_goal_total":      "Optional: how much you want to save overall for baby-related costs.",
-            "savings_deadline":        "Optional: when you want to reach your savings goal by.",
             "budget_goal":             "Optional: your monthly pregnancy/baby spending target.",
         }
 

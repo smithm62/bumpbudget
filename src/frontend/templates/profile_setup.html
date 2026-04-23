@@ -132,22 +132,6 @@
       </div>
 
       <!-- Savings -->
-      <div class="form-section-title">Savings</div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label" for="id_savings_goal_total">{{ form.savings_goal_total.label }}</label>
-          {{ form.savings_goal_total }}
-          <p class="form-hint">{{ form.savings_goal_total.help_text }}</p>
-          {% if form.savings_goal_total.errors %}<p class="form-error">{{ form.savings_goal_total.errors|join:", " }}</p>{% endif %}
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="id_savings_deadline">{{ form.savings_deadline.label }}</label>
-          {{ form.savings_deadline }}
-          <p class="form-hint">{{ form.savings_deadline.help_text }}</p>
-          {% if form.savings_deadline.errors %}<p class="form-error">{{ form.savings_deadline.errors|join:", " }}</p>{% endif %}
-        </div>
-      </div>
 
       <div class="form-actions">
         <button type="submit" class="btn btn-primary">Save and continue</button>

@@ -97,7 +97,6 @@
   <!-- LEFT COLUMN -->
   <div class="dash-left">
 
-    {% include "savings.html" %}
 
     <!-- Spending chart -->
     <section class="card">
@@ -192,7 +191,7 @@
       <div class="quick-actions">
         <a href="{% url 'add_expense' %}"      class="btn btn-primary">+ Add expense</a>
         <a href="{% url 'add_savings_goal' %}" class="btn btn-outline">+ New goal</a>
-        <a href="{% url 'plan' %}"             class="btn btn-outline">Set plan</a>
+        <a href="{% url 'plan' %}"             class="btn btn-outline">View plans</a>
         <a href="{% url 'profile_setup' %}"    class="btn btn-outline">Edit profile</a>
       </div>
     </section>
